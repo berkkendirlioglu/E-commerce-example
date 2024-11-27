@@ -180,7 +180,17 @@ const ProductDetail = () => {
       count:productCountVar,
     }));
 
-    const updatedBasketArray = [...basketArray, ...updatedVariants];
+    const updatedBasketArray = [...basketArray];
+
+    updatedVariants.forEach((newItem) => {
+      const existingItemIndex = updatedBasketArray.findIndex((item) => item.id === newItem.id);
+
+      if(existingItemIndex !== -1){
+        updatedBasketArray[existingItemIndex].count += newItem.count;
+      }else{
+        updatedBasketArray.push(newItem)
+      }
+    })
 
     localStorage.setItem("basket",JSON.stringify(updatedBasketArray));
     setBasket(updatedBasketArray);

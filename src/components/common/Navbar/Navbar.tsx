@@ -67,6 +67,24 @@ const Navbar = () => {
 
   console.log("basket: ",basket);
 
+  const increaseProductCount = (productId:string) => {
+    const updatedBasket = basket.map((item) => item.id === productId ? {...item, count:item.count! + 1} : item);
+
+    setBasket(updatedBasket);
+    localStorage.setItem("basket",JSON.stringify(updatedBasket));
+  }
+
+  const decreaseProductCount = (productId: string) => {
+    const updatedBasket = basket.map((item) =>
+      item.id === productId && item.count! > 1
+        ? { ...item, count: item.count! - 1 }
+        : item
+    );
+  
+    setBasket(updatedBasket);
+    localStorage.setItem("basket", JSON.stringify(updatedBasket));
+  };
+
   const basketTotalPrice = basket.reduce((accumulator, item) => {
     return accumulator + item.count! * item.price.total_price ;
   },0)
@@ -203,7 +221,9 @@ const Navbar = () => {
               </div>
 
               <div className={`${styles["products-wrapper"]}`}>
-                {basket.map((product) => (
+                {basket.length > 0 ? (
+                  <>
+                    {basket.map((product) => (
                   <div className={`${styles["product-box"]}`}>
 
                     <div className={`${styles["product-content"]}`}>
@@ -221,12 +241,12 @@ const Navbar = () => {
                         {product.count === 1 ? (
                           <button onClick={() => removeBasketToProduct(product.id)} className={`${styles["trash-button"]}`}><i className="bi bi-trash2"></i></button>
                         ):(
-                          <button className={`${styles["minus-button"]}`}>
+                          <button onClick={() => decreaseProductCount(product.id)} className={`${styles["minus-button"]}`}>
                             <i className="bi bi-dash"></i>
                           </button>
                         )}
                         <span className={`${styles["product-current-count"]}`}>{product.count}</span>
-                        <button className={`${styles["plus-button"]}`}>
+                        <button onClick={() => increaseProductCount(product.id)} className={`${styles["plus-button"]}`}>
                           <i className="bi bi-plus-lg"></i>
                         </button>
                       </div>
@@ -234,6 +254,12 @@ const Navbar = () => {
 
                   </div>
                 ))}
+                  </>
+                ):(
+                  <div className={`${styles["empty-basket"]}`}>
+                    <p className={`${styles["empty-basket-text"]}`}>Sepete eklenmiş herhangi bir ürün yok!</p>
+                  </div>
+                )}
                 
               </div>
 

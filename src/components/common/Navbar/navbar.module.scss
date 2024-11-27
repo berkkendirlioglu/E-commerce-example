@@ -242,6 +242,15 @@ $black-color:rgba(0,0,0,1);
                                             }
                                         }
                                     }
+                                    .empty-basket{
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        height: 100%;
+                                        .empty-basket-text{
+                                            font-weight: bold;
+                                        }
+                                    }
                                 }
                                 .basket-total-price{
                                     padding: .5rem 0;
