@@ -18,6 +18,7 @@ function MyAccount() {
 
   const accountSubmit: SubmitHandler<AccountSettingsType> = (data) => {
     setAccountForm(data);
+    localStorage.setItem("account",JSON.stringify(accountForm));
   };
 
   const addressSubmit: SubmitHandler<AccountSettingsType> = (data) => {
@@ -45,7 +46,7 @@ function MyAccount() {
     const addressArray = storedAddress ? JSON.parse(storedAddress) : [];
     setAddress(addressArray);
     setisAddress(addressArray.length > 0);
-  }, [window.addEventListener("storage", (event) => {})]);
+  }, [window.addEventListener("storage", (event) => {event})]);
 
   const userData = Users.results[0];
 
