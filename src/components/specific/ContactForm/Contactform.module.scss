@@ -1,0 +1,75 @@
+$border-color: rgba(229, 229, 229, 1);
+
+.form {
+  width: 700px;
+  padding: 1rem 0;
+
+  .form-text {
+    padding: 1rem 0;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .name,
+    .lastname {
+      flex: 49% 0 1;
+      margin: 0.7rem 0;
+    }
+    .mail,
+    .message {
+      flex: 100%;
+      margin: 0.5rem 0;
+    }
+    .name,
+    .lastname,
+    .mail,
+    .message {
+      padding: 0.5rem 0.8rem;
+      border: 1px solid $border-color;
+      border-radius: 5px;
+
+      &:focus {
+        outline: none;
+      }
+    }
+    .message {
+      height: 150px;
+      resize: none;
+    }
+    .button-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 0.7rem 0;
+      .send-button {
+        background: #000;
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        padding: 0.7rem 1rem;
+        font-size: 20px;
+        color: #fff;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@media(max-width:1200px){
+  .form{
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .form{
+    .contact-form {
+        .name,
+        .lastname {
+          flex: 100% 0 0;
+        }
+      }
+  }
+}

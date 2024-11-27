@@ -1,0 +1,96 @@
+$light-color:rgba(229, 229, 229, 1);
+$dark-color:rgba(34, 34, 34, 1);
+
+.sss{
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .sss-container{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .sss-wrapper{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: auto;
+            padding: .5rem 0;
+            .sss-header{
+                width: 100%;
+
+                .buttons-container{
+                    padding: 1rem 0;
+                    .button{
+                        padding: .8rem .8rem;
+                        background: $light-color;
+                        text-decoration: none;
+                        color: $dark-color;
+                        &:nth-child(2){
+                            margin: 0 1rem;
+                        }
+                    }
+
+                }
+                .pagination{
+                    padding: 1rem 0;
+                    .pagination-text{
+                        margin: 0;
+                        font-size: 16px;
+                        font-weight: 600;
+                        .pagination-icon{
+                            margin: 0 .4rem 0 0;
+                            font-size: 18px;
+                        }
+                    }
+                }
+            }
+            .sss-content{
+                width: 100%;
+                height: auto;
+                padding: 0 .3rem;
+                background: $light-color;
+                .accordion{
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    border:none;
+                    padding: .8rem .5rem;
+                    margin: .5rem 0 .5rem 0;
+                    .title{
+                        margin: 0;
+                    }
+                }
+                .content{
+                    padding: .5rem .5rem;
+                    .content-text{
+                        margin: 0;
+                    }
+                }
+            }
+        }
+    }
+}
+@media (min-width:1400px){
+    .sss{
+        .sss-container{
+            max-width: 1320px;
+        }
+    }
+}
+@media (max-width:1200px){
+    .sss{
+        .sss-container{
+            .sss-wrapper{
+                padding: 2rem 0;
+            }
+        }
+    }
+}
+@media (max-width:768px){
+    .sss{
+        padding: 8rem 0;
+    }
+}

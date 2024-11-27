@@ -1,0 +1,11 @@
+{
+    "results":[
+        {
+            "id":1,
+            "name":"Berk",
+            "lastName":"kendirlioğlu",
+            "email":"example@hotmail.com",
+            "password":"123456"
+        }
+    ]
+}

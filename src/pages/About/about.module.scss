@@ -1,0 +1,115 @@
+.about{
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .about-container{
+        width: 100%;
+        .about-wrapper{
+            .first-wrapper{
+                padding: 0 1rem 1rem 1rem;
+                .about-texts{
+                    .fw-title{
+                        font-weight: bold;
+                        padding: 0 0 1rem 0;
+                    }
+                }
+                .certificate{
+                    .c-title{
+                        font-weight: bold;
+                        padding: 0 0 1rem 0;
+                    }
+                    .c-images{
+                        display: flex;
+                        flex-wrap: wrap;
+                        img{
+                            &:nth-child(2){
+                                margin: 0 1rem;
+                            }
+                            &:nth-child(3){
+                                margin: 0 1rem 0 0;
+                            }
+                            &:nth-child(5){
+                                margin: 0 1rem;
+                            }
+                        }
+                    }
+                }
+            }
+            .second-wrapper{
+                width: 100%;
+                padding: 5rem 0;
+                .sw-content{
+                    .rate-comments{
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: start;
+                        align-items: center;
+                        .comment-count{
+                            margin: 0 0 0 .5rem;
+                        }
+                    }
+                    .product-inspect{
+                        padding: 1rem 0;
+                        .inspect-btn{
+                            display: inline-block;
+                            color: #fff;
+                            border-radius: 25px;
+                            padding: .8rem 1rem;
+                            background: linear-gradient(82.82deg, #387EC7 0%, #1F23AA 100%);
+                            ;
+                        }
+                    }
+                    .comments{
+                        width: 100%;
+                        height: auto;
+                        padding: 0 .5rem;
+                        
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (min-width:1400px){
+    .about{
+        .about-container{
+            max-width: 1320px;
+        }
+    }
+}
+
+@media(max-width:992px){
+    .about{
+        .about-container{
+            .about-wrapper{
+                padding: 2rem 0;
+            }
+        }
+    }
+}
+@media(max-width:768px){
+    .about{
+        padding: 9rem 0;
+        .about-container{
+            .about-wrapper{
+                padding: 0;
+                .first-wrapper{
+                    .certificate{
+                        .c-images{
+                            img{
+                                &:nth-child(2){
+                                    margin: 0 1rem;
+                                }
+                                &:nth-child(5){
+                                    margin: 0 1rem;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

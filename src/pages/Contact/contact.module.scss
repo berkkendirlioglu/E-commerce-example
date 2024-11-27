@@ -1,0 +1,52 @@
+$border-color:rgba(229, 229, 229, 1);
+.contact{
+    .contact-container{
+        display: flex;
+        justify-content: center;
+        .form-container{
+            width: 700px;
+            height: auto;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            padding: 1rem 0 7rem 0;
+            .form-header{
+                width: 100%;
+                text-align: center;
+                padding: 1.5rem 0;
+                .header-text{
+                    font-weight: bold;
+                }
+            }
+            
+            .information{
+                text-align: center;
+                .f-text{
+                    font-size: 13px;
+                    padding: 0 4rem;
+                }
+                .s-text{
+                    padding: 0;
+                    margin: 0;
+                    font-size: 13px;
+                    span{
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:576px){
+    .contact{
+        .contact-container{
+            .form-container{
+                padding: 0 0 5rem 0;
+                .form-header{
+                    padding: 0;
+                }
+            }
+        }
+    }
+}

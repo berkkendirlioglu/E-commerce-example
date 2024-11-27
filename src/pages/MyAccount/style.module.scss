@@ -1,0 +1,402 @@
+.my-account-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .my-account-wrapper {
+    width: 100%;
+    padding: 4rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    .menu-links {
+      flex: 20%;
+      height: auto;
+      .menu-title {
+        .title {
+          font-weight: bold;
+          font-size: 32px;
+        }
+      }
+      .my-account-links {
+        padding: 2rem 0;
+        .links {
+          list-style: none;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+          .link {
+            font-size: 18px;
+            cursor: pointer;
+            user-select: none;
+            i {
+              font-size: 24px;
+              padding: 0 0.3rem 0 0;
+            }
+          }
+          .active-link {
+            font-size: 20px;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+
+    .content-container {
+      flex: 80% 0 0;
+      height: auto;
+      display: flex;
+      .account-info-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        .info-title-wrapper {
+          .info-title {
+            font-weight: bold;
+          }
+        }
+        .account-info-form {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          .firstName,
+          #firstName,
+          .lastName,
+          #lastName {
+            flex: 49% 0 0;
+          }
+          .firstName {
+            order: 1;
+          }
+          .lastName {
+            order: 2;
+          }
+          #firstName {
+            order: 3;
+          }
+          #lastName {
+            order: 4;
+          }
+          .phone {
+            order: 5;
+          }
+          .phone-input {
+            order: 6;
+            border: 1px solid rgba(229, 229, 229, 1);
+            border-radius: 4px;
+            padding: 0.5rem;
+            input {
+              background: rgba(247, 247, 247, 1);
+              border: none;
+              padding: 0 .5rem;
+              &:focus{
+                outline: none;
+              }
+            }
+          }
+          .email {
+            order: 7;
+          }
+          #email {
+            order: 8;
+          }
+          .info-button-wrapper {
+            order: 9;
+            display: flex;
+            justify-content: end;
+            .info-button {
+              margin: 1rem 0 0 0;
+              padding: 0.7rem 1rem;
+              font-size: 24px;
+              background: #000;
+              color: #fff;
+              border-radius: 5px;
+              border: none;
+            }
+          }
+
+          .phone,
+          .phone-input,
+          .email,
+          #email,
+          .info-button-wrapper {
+            flex: 100% 0 0;
+          }
+
+          #firstName,
+          #lastName{
+            background: rgba(247, 247, 247, 1);
+            border: 1px solid rgba(229, 229, 229, 1);
+            border-radius: 4px;
+            padding: 0.5rem;
+            &:focus {
+              outline: none;
+            }
+          }
+          #email {
+            padding: 0.5rem;
+            border-radius: 4px;
+            background: rgba(229, 229, 229, 1);
+            border: 1px solid rgba(136, 136, 136, 1);
+          }
+        }
+      }
+      .delivery-info-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        .delivery-title-wrapper {
+          .delivery-title {
+            font-weight: bold;
+          }
+        }
+        .delivery-content {
+          display: flex;
+          flex-direction: column;
+          .delivery-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 200px;
+            padding: 1rem;
+            border: 1px solid #000;
+            .detail-button-wrapper {
+              .delivery-detail-button {
+                padding: 0.6rem 1rem;
+                border: 1px solid #000;
+                border-radius: 4px;
+                transition: all 0.1s linear;
+                &:hover {
+                  background: #000;
+                  color: #fff;
+                }
+              }
+            }
+          }
+        }
+      }
+      .address-wrapper {
+        width: 100%;
+        .without-address-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem;
+          .without-address-title {
+            .address-title {
+              font-weight: bold;
+            }
+          }
+          .address-info-wrapper {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(33, 38, 171, 1);
+            border-radius: 4px;
+            background: rgba(33, 38, 171, 0.1);
+          }
+          .address-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+            .address-title-label,
+            #address-title-input,
+            .address-label,
+            #address-input,
+            .address-phone-label,
+            .address-phone-input {
+              flex: 100%;
+            }
+            .address-firstName-label,
+            #address-firstName-input,
+            .address-lastName-label,
+            #address-lastName-input,
+            .address-city-label,
+            #address-city-input,
+            .address-state-label,
+            #address-state-input {
+              flex: 49%;
+            }
+            .address-title-label {
+              order: 1;
+            }
+            #address-title-input {
+              order: 2;
+            }
+            .address-firstName-label {
+              order: 3;
+            }
+            .address-lastName-label {
+              order: 4;
+            }
+            #address-firstName-input {
+              order: 5;
+            }
+            #address-lastName-input {
+              order: 6;
+            }
+            .address-label {
+              order: 7;
+            }
+            #address-input {
+              order: 8;
+            }
+            .address-city-label {
+              order: 9;
+            }
+            .address-state-label {
+              order: 10;
+            }
+            #address-city-input {
+              order: 11;
+            }
+            #address-state-input {
+              order: 12;
+            }
+            .address-phone-label {
+              order: 13;
+            }
+            .address-phone-input {
+              order: 14;
+              border: 1px solid rgba(229, 229, 229, 1);
+              padding: 0.5rem;
+              input {
+                background: rgba(247, 247, 247, 1);
+                border: none;
+                border-radius: 4px;
+                padding: 0 .5rem;
+                &:focus {
+                  outline: none;
+                }
+              }
+            }
+            #address-title-input,
+            #address-firstName-input,
+            #address-lastName-input,
+            #address-input,
+            #address-city-input,
+            #address-state-input {
+              background: rgba(247, 247, 247, 1);
+              border: 1px solid rgba(229, 229, 229, 1);
+              border-radius: 4px;
+              padding: 0.5rem;
+              &:focus {
+                outline: none;
+              }
+            }
+            .address-button-wrapper {
+              order: 15;
+              width: 100%;
+              display: flex;
+              justify-content: end;
+              .address-submit-button {
+                margin: 1rem 0 0 0;
+                padding: 0.7rem 1rem;
+                font-size: 24px;
+                background: #000;
+                color: #fff;
+                border-radius: 5px;
+                border: none;
+              }
+            }
+          }
+        }
+        .with-address-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem;
+          .with-address-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .address-count-title {
+              font-weight: bold;
+            }
+            .new-address {
+              border: none;
+              background: transparent;
+              display: flex;
+              align-items: center;
+              gap: 0 0.5rem;
+              font-weight: bold;
+              .new-address-icon {
+                font-size: 18px;
+              }
+            }
+          }
+          .saved-address-wrapper {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            .address-box {
+              display: flex;
+              gap: 4rem;
+              flex-direction: column;
+              justify-content: space-between;
+              flex: 0 0 400px;
+              height: auto;
+              padding: 1rem;
+              border-radius: 4px;
+              border: 1px solid #000;
+              .delete-edit-wrapper {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                .delete-button,
+                .address-edit-button {
+                  border: none;
+                  background: transparent;
+                  display: flex;
+                  align-items: center;
+                }
+                .delete-button-icon {
+                  font-size: 24px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1400px) {
+  .my-account-container {
+    .my-account-wrapper {
+      max-width: 1320px;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .my-account-container {
+    .my-account-wrapper {
+      .menu-links {
+        flex: 0 0 32%;
+        padding: 0 0 0 1rem;
+      }
+      .content-container {
+        flex: 0 0 68%;
+        padding: 0 1rem 0 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .my-account-container {
+    .my-account-wrapper {
+      .menu-links {
+        flex: 0 0 100%;
+      }
+      .content-container {
+        flex: 0 0 100%;
+      }
+    }
+  }
+}

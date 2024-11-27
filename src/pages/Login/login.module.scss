@@ -1,0 +1,67 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .login-container {
+    width: 100%;
+    padding: 5rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+      .login-header {
+        justify-content: space-between;
+        display: flex;
+        .login-page-btn,
+        .register-page-btn {
+          padding: 1rem 0;
+          flex: 49% 0 1;
+          text-align: center;
+          text-decoration: none;
+          color: rgba(51, 51, 51, 1);
+          font-size: 18px;
+          font-weight: 600;
+        }
+      }
+      .login-form-wrapper {
+        padding: 2rem 2.5rem;
+        .login-form {
+          display: flex;
+          flex-direction: column;
+          .email-title, .pass-title{
+            font-weight: 600;
+            margin: 0 0 .7rem 0;
+          }
+          #email{
+            margin: 0 0 1rem 0;
+          }
+
+          #email, #password {
+            padding: 0.7rem 0.8rem;
+            border: 1px solid rgba(229, 229, 229, 1);
+            border-radius: 5px;
+            &:focus{
+                outline: none;
+            }
+          }
+
+        }
+        .forget-password{
+            padding: 1rem 0;
+            display: flex;
+            justify-content: end;
+            .forget-pass-text{
+                color: rgba(0,0,0,1);
+                font-size: 14px;
+            }
+        }
+      }
+  }
+}
+
+@media (min-width: 1400px) {
+  .login-page {
+    .login-container {
+      max-width: 1320px;
+    }
+  }
+}

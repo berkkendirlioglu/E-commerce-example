@@ -1,0 +1,138 @@
+.register{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .register-container{
+        width: 100%;
+        padding: 5rem 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .register-header {
+            justify-content: space-between;
+            display: flex;
+            .login-page-btn,
+            .register-page-btn {
+              padding: 1rem 0;
+              flex: 49% 0 1;
+              text-align: center;
+              text-decoration: none;
+              color: rgba(51, 51, 51, 1);
+              font-size: 18px;
+              font-weight: 600;
+            }
+          }
+        .register-form-wrapper{
+            padding: 2rem 2rem;
+            .register-form{
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                margin: 0 0 1rem 0;
+                .first-name{
+                    order: 1;
+                }
+                #first-name{
+                    order:3;
+                }
+                .last-name{
+                    order:2;
+                };
+                #last-name{
+                    order:4;
+                }
+                .email{
+                    order:5;
+                }
+                #email{
+                    order: 6;
+                }
+                .password{
+                    order: 7;
+                }
+                #password{
+                    order: 8;
+                }
+                .first-name, #first-name, .last-name, #last-name{
+                    flex: 49% 0 1;
+                }
+                .email, #email, .password, #password{
+                    flex: 100%;
+                }
+                #first-name, #last-name, #email, #password{
+                    padding: 0.7rem 0.8rem;
+                    border: 1px solid rgba(229, 229, 229, 1);
+                    border-radius: 5px;
+                    &:focus{
+                        outline: none;
+                    }
+                }
+                .first-name, .last-name, .email, .password{
+                    margin: 0 0 .5rem 0;
+                    padding: 0 .1rem;
+                    font-weight: 600;
+                }
+                .email,.password{
+                    padding: 1rem 0 0 0;
+                }
+            }
+            .login-link-wrapper{
+                padding: .5rem .2rem;
+                .login-text{
+                    font-size: 14px;
+                    .login-link{
+                        text-decoration: none;
+                        
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (min-width:1400px){
+    .register{
+        .register-container{
+            max-width: 1320px;
+        }
+    }
+}
+
+@media(max-width:1200px){
+    .register{
+        .register-container{
+            .register-form-wrapper{
+                padding: 1rem 1rem;
+            }
+        }
+    }
+}
+
+@media (max-width:992px){
+    .register{
+        .register-container{
+            .register-form-wrapper{
+                .register-form{
+                    .first-name{
+                        order:1;
+                    }
+                    #first-name{
+                        order:2;
+                    }
+                    .last-name{
+                        order:3;
+                    }
+                    #last-name{
+                        order: 4;
+                    }
+                    .first-name, #first-name, .last-name, #last-name{
+                        flex: 100%;
+                    }
+                    .first-name,.last-name,.email,.password{
+                        padding: .5rem 0 .1rem .1rem;
+                    }
+                }
+            }
+        }
+    }
+}
