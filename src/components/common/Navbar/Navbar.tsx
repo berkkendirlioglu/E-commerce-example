@@ -335,7 +335,7 @@ const Navbar = () => {
                               <div className={`${styles["top-seller-img"]}`}>
                                 <img
                                   className={`${styles["product-img"]}`}
-                                  src={`${import.meta.env.VITE_BASE_URL + top_seller.picture_src}`}
+                                  src={`${BASE_URL + top_seller.picture_src}`}
                                   alt=""
                                 />
                               </div>
