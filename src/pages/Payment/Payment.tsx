@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./style.module.scss";
 import { navBarStore } from "../../store/NavbarStore";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -26,6 +26,13 @@ function Payment() {
     useState<DeliveryType>();
 
   const [currentStep, setCurrentStep] = useState<number>(1);
+
+  useEffect(() => {
+    setsavedAddress(() => {
+      const arrayAddress = localStorage.getItem("address");
+      return arrayAddress ? JSON.parse(arrayAddress) : [];
+    })
+  }, []);
 
   const goToNextStep = () => {
     setCurrentStep((prevStep) => prevStep + 1);

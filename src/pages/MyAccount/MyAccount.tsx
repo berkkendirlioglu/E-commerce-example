@@ -24,6 +24,13 @@ function MyAccount() {
   const [DeliveryId, setDeliveryId] = useState<string>();
   const { register, handleSubmit } = useForm<AccountSettingsType>();
 
+  useEffect(() => {
+    setDeliveries(() => {
+      const arrayDeliveries = localStorage.getItem("completeDelivery");
+      return arrayDeliveries ? JSON.parse(arrayDeliveries) : []
+    })
+  }, []);
+
   const accountSubmit: SubmitHandler<AccountSettingsType> = (data) => {
     setAccountForm(data);
     localStorage.setItem("account", JSON.stringify(accountForm));
