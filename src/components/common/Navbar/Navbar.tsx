@@ -5,6 +5,8 @@ import { Logo_Siyah, navBarStore } from "../../../pages/index.ts";
 import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+const BASE_URL:string = "https://fe1111.projects.academy.onlyjs.com"
+
 const Navbar = () => {
   const {
     categories,
@@ -37,7 +39,7 @@ const Navbar = () => {
   );
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/categories`).then((response) => {
+    axios.get(`${BASE_URL}/api/v1/categories`).then((response) => {
       setCategories(response.data);
     });
   }, []);

@@ -7,6 +7,8 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { NavLink } from "react-router-dom";
 
+const BASE_URL:string = "https://fe1111.projects.academy.onlyjs.com"
+
 function MyAccount() {
   const [activeSection, setactiveSection] = useState<
     "accountInfo" | "delivery" | "address"
@@ -241,7 +243,7 @@ function MyAccount() {
                                   >
                                     <img
                                       src={
-                                        import.meta.env.VITE_BASE_URL +
+                                        BASE_URL +
                                         product.photo_src
                                       }
                                       alt=""
@@ -426,7 +428,7 @@ function MyAccount() {
                               >
                                 <img
                                   src={
-                                    import.meta.env.VITE_BASE_URL +
+                                    BASE_URL +
                                     delivery.products![0].photo_src
                                   }
                                   alt={delivery.products![0].name}

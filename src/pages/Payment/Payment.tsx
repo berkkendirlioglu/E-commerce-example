@@ -6,6 +6,8 @@ import { AddressType, submitFormType, DeliveryType } from "../index.ts";
 import { NavLink } from "react-router-dom";
 import { shippingMethod } from "../../dummyData/shippingMethod";
 
+const BASE_URL:string = "https://fe1111.projects.academy.onlyjs.com"
+
 function Payment() {
   const [savedAddress, setsavedAddress] = useState<AddressType[]>(() => {
     const address = localStorage.getItem("address");
@@ -453,7 +455,7 @@ function Payment() {
                   <div className={`${styles["product-first-content"]}`}>
                     <div className={`${styles["product-img-wrapper"]}`}>
                       <img
-                        src={import.meta.env.VITE_BASE_URL + products.photo_src}
+                        src={BASE_URL + products.photo_src}
                         alt={products.name}
                       />
                       <div className={`${styles["product-count"]}`}>
