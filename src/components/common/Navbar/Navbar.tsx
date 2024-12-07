@@ -226,7 +226,7 @@ const Navbar = () => {
 
                     <div className={`${styles["product-content"]}`}>
                       <div className={`${styles["product-img-wrapper"]}`}>
-                        <img className={`${styles["basket-product-img"]}`} src={`${import.meta.env.VITE_BASE_URL+product.photo_src}`} alt="" />
+                        <img className={`${styles["basket-product-img"]}`} src={`${BASE_URL+product.photo_src}`} alt="" />
                       </div>
                       <div className={`${styles["product-info"]}`}>
                         <span className={`${styles["product-title"]}`}>{product.name}</span>
