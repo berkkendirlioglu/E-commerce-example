@@ -9,6 +9,7 @@ export {default as ForgotPassword} from './ForgotPassword/ForgotPassword.tsx';
 export {default as Products} from './Products/Products.tsx';
 export {default as ProductDetail} from './ProductDetail/ProductDetail.tsx';
 export {default as MyAccount} from './MyAccount/MyAccount.tsx';
+export {default as Payment} from './Payment/Payment.tsx';
 
 // Root & Routes Components
 export {default as Root} from './Root'
@@ -59,6 +60,7 @@ export type {AllProductType, LoaderData, ProductInfo} from '../types/allproductT
 export type {default as ProductDetailType, SizeType,VariantsType} from '../types/ProductDetailType.ts';
 export type {default as CategoriesType} from '../types/navbarTypes.ts';
 export type {default as AccountSettingsType} from '../types/AccountSettingsType.ts';
+export type {AddressType, CreditCardsType, submitFormType, DeliveryType,} from '../types/PaymentTypes.ts';
 
 // Store
 export {navBarStore} from '../store/NavbarStore.ts';

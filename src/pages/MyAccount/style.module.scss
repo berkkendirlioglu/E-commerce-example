@@ -45,6 +45,155 @@
       flex: 80% 0 0;
       height: auto;
       display: flex;
+      .delivery-detail-container{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        align-items: start;
+        .delivery-back-button{
+          background: transparent;
+          padding: .2rem .2rem;
+          font-weight: bold;
+          border: none;
+          font-size: 24px;
+        }
+        .detail-title-wrapper{
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: .5rem;
+          .delivery-status{
+            font-weight: bold;
+          }
+        }
+        .delivery-detail-content{
+          width: 100%;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          .product-detail-wrapper{
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 2rem 0;
+            border-top: 2px solid #000;
+            flex: 65% 0 0;
+            .product-shipping-detail{
+              padding: .5rem 0;
+              border-top: 2px solid #000;
+            }
+            .product-box{
+              width: 100%;
+              display: flex;
+              gap: 2rem;
+              .product-img-wrapper{
+                width: 200px;
+                height: 200px;
+                img{
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                }
+              }
+              .product-name-detail{
+                .product-name{
+                  font-weight: bold;
+                  font-size: 20px;
+                }
+                .product-size,.product-price{
+                  font-weight: 600;
+                }
+              }
+            }
+          }
+          .delivery-information-wrapper{
+            display: flex;
+            flex-direction: column;
+            flex: 30% 0 0;
+            border-top: 2px solid #000;
+            .delivery-address-wrapper{
+              display: flex;
+              flex-direction: column;
+              gap: .5rem;
+              padding: 1rem 0;
+              border-bottom: 1px solid #000;
+              .address-title{
+                font-weight: bold;
+              }
+              .full-address{
+                text-decoration: underline;
+                text-transform: capitalize;
+              }
+              .user-fullName{
+                text-transform: capitalize;
+              }
+            }
+            .credit-card-wrapper{
+              display: flex;
+              flex-direction: column;
+              gap: .5rem;
+              padding: 1rem 0;
+              border-bottom: 1px solid #000;
+              .credit-card-items{
+                font-weight: 600;
+                font-size: 20px;
+              }
+            }
+            .price-details-wrapper{
+              display: flex;
+              flex-direction: column;
+              gap: .5rem;
+              padding: 1rem 0;
+              border-bottom:1px solid #000;
+              .price-detail-title{
+                font-weight: bold;
+                font-size: 20px;
+              }
+              .price-details{
+                display: flex;
+                justify-content: space-between;
+              }
+            }
+            .help-wrapper{
+              display: flex;
+              flex-direction: column;
+              gap: .5rem;
+              padding: 1rem 0;
+              .help-title{
+                font-size: 22px;
+                font-weight: bold;
+              }
+              .help-link{
+                text-decoration: none;
+                color: #000;
+                font-size: 16px;
+              }
+            }
+          }
+        }
+      }
+      .not-yet-delivery{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 10rem 0;
+        width: 100%;
+        .all-product-link{
+          text-decoration: none;
+          font-size: 22px;
+          padding: .5rem 1rem;
+          background: #000;
+          color: #fff;
+          border-radius: 5px;
+        }
+        .not-delivery{
+          font-weight: bold;
+          font-size: 24px;
+        }
+      }
       .account-info-container {
         width: 100%;
         display: flex;
@@ -149,20 +298,58 @@
         gap: 1rem;
         padding: 1rem;
         .delivery-title-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: start;
+          gap: 1rem;
           .delivery-title {
             font-weight: bold;
           }
         }
         .delivery-content {
           display: flex;
-          flex-direction: column;
+          flex-direction: column-reverse;
+          padding: 1rem 0;
+          gap: 1rem;
           .delivery-box {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 200px;
             padding: 1rem;
-            border: 1px solid #000;
+            .delivery-first-box{
+              display: flex;
+              gap: 0 2rem;
+              .delivery-img-wrapper{
+                width: 150px;
+                height: 150px;
+                img{
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  border-radius: 5px;
+                  user-select: none;
+                  pointer-events: none;
+                }
+              }
+              .delivery-detail-wrapper{
+                display: flex;
+                flex-direction: column;
+                gap: .5rem;
+                .delivered-text{
+                    color: rgba(82, 196, 26, 1);
+                }
+                .delivery-products-name{
+                  font-weight: bold;
+                  max-width: 90%;
+                }
+                .delivery-number{
+                  font-weight: bold;
+                  .delivery-number-text{
+                    font-weight: normal;
+                  }
+                }
+              }
+            }
             .detail-button-wrapper {
               .delivery-detail-button {
                 padding: 0.6rem 1rem;

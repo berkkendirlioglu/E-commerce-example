@@ -5,8 +5,6 @@ import { Logo_Siyah, navBarStore } from "../../../pages/index.ts";
 import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
-
 const Navbar = () => {
   const {
     categories,
@@ -39,7 +37,7 @@ const Navbar = () => {
   );
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/api/v1/categories`).then((response) => {
+    axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/categories`).then((response) => {
       setCategories(response.data);
     });
   }, []);
@@ -58,14 +56,12 @@ const Navbar = () => {
 
   const handleLogOut = () => {
     localStorage.removeItem("session_id");
-    window.location.reload();
+    window.location.href="/";
   }
 
   useEffect(() => {
     setBasket(JSON.parse(localStorage.getItem("basket") || "[]"))
   }, []);
-
-  console.log("basket: ",basket);
 
   const increaseProductCount = (productId:string) => {
     const updatedBasket = basket.map((item) => item.id === productId ? {...item, count:item.count! + 1} : item);
@@ -227,11 +223,13 @@ const Navbar = () => {
                   <div className={`${styles["product-box"]}`}>
 
                     <div className={`${styles["product-content"]}`}>
-                      <img className={`${styles["basket-product-img"]}`} src={`${BASE_URL+product.photo_src}`} alt="" />
+                      <div className={`${styles["product-img-wrapper"]}`}>
+                        <img className={`${styles["basket-product-img"]}`} src={`${import.meta.env.VITE_BASE_URL+product.photo_src}`} alt="" />
+                      </div>
                       <div className={`${styles["product-info"]}`}>
                         <span className={`${styles["product-title"]}`}>{product.name}</span>
                         <span className={`${styles["product-aroma"]}`}>{product.aroma}</span>
-                        <span className={`${styles["product-gram"]}`}>{product.size.gram}G</span>
+                        <span className={`${styles["product-gram"]}`}>{product.size.gram ? `${product.size.gram >= 1000 ? `${(product.size.gram / 1000).toFixed(1)}KG`: `${product.size.gram}G`}` : `${product.size.pieces} Adet ${product.size.total_services} Servis`}</span>
                       </div>
                     </div>
 
@@ -268,12 +266,12 @@ const Navbar = () => {
               </div>
 
               <div className={`${styles["basket-button-wrapper"]}`}>
-                <button className={`${styles["basket-button"]}`}>
+                <NavLink to={basket.length > 0 ? "/payment": "/"} className={`${styles["basket-button"]}`}>
                   DEVAM ET&nbsp;
                   <i
                     className={`${styles["basket-icon"]} bi bi-caret-right-fill`}
                   ></i>
-                </button>
+                </NavLink>
               </div>
             </div>
           </div>
@@ -335,7 +333,7 @@ const Navbar = () => {
                               <div className={`${styles["top-seller-img"]}`}>
                                 <img
                                   className={`${styles["product-img"]}`}
-                                  src={`${BASE_URL + top_seller.picture_src}`}
+                                  src={`${import.meta.env.VITE_BASE_URL + top_seller.picture_src}`}
                                   alt=""
                                 />
                               </div>
@@ -403,7 +401,7 @@ const Navbar = () => {
             </NavLink>
 
             <div className={`${styles["other-links-wrapper"]}`}>
-              <NavLink className={`${styles["other-link"]}`} to={"/account"}>
+              <NavLink className={`${styles["other-link"]}`} to={"/my-account"}>
                 HESABIM
               </NavLink>
               <NavLink className={`${styles["other-link"]}`} to={"/"}>

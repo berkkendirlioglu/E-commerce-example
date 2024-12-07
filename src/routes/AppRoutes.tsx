@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Homepage, Root, Contact, SSS, About, Login,Register, ForgotPassword, FetchProductDetail, ProductDetail, fetchAllProducts, Products, MyAccount,} from '../pages/index.ts';
+import { Homepage, Root, Contact, SSS, About, Login,Register, ForgotPassword, FetchProductDetail, ProductDetail, fetchAllProducts, Products, MyAccount, Payment,} from '../pages/index.ts';
 
 const session_id = localStorage.getItem("session_id");
 
@@ -23,6 +23,10 @@ const router = createBrowserRouter([
           {
             path:"/about",
             element:<About/>
+          },
+          {
+            path:"/payment",
+            element:<Payment/>
           },
           {
             path:":mainCategory",
