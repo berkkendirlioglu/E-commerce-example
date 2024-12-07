@@ -60,9 +60,9 @@ const Login = () => {
 
                     <form className={`${styles["login-form"]}`} onSubmit={handleSubmit(onSubmit)}>
                         <label className={`${styles["email-title"]}`} htmlFor="email">*E-Posta</label>
-                        <input id={`${styles["email"]}`} {...register("email")} type="text" />
+                        <input value={"example@hotmail.com"} id={`${styles["email"]}`} {...register("email")} type="text" />
                         <label className={`${styles["pass-title"]}`} htmlFor="password">*Şifre</label>
-                        <input id={`${styles["password"]}`} {...register("password")} type="password" />
+                        <input value={123456} id={`${styles["password"]}`} {...register("password")} type="password" />
                         <AccountButton content='GİRİŞ YAP'/>
                     </form>
 
