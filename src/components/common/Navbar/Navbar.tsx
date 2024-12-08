@@ -124,8 +124,6 @@ const Navbar = () => {
     document.body.style.overflow = "";
   }
 
-  console.log("search results: ", searchResults);
-
   return (
     <nav className={`${styles["navbar"]}`}>
       <div className={`${styles["navbar-wrapper"]}`}>
