@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { CategoriesType, VariantsType } from "../pages/index.ts";
+import { ProductInfo, CategoriesType, VariantsType } from "../pages/index.ts";
 
 interface NavbarStoreType {
     categories:CategoriesType | null;
@@ -8,6 +8,8 @@ interface NavbarStoreType {
     handleAccount:boolean,
     handlePopupMenu:number | null,
     basket:VariantsType[],
+    search:string | undefined,
+    searchResults:ProductInfo[] | undefined
     setCategories: (categories: CategoriesType) => void;
     sethandleMenu: () => void;
     sethandleBasket: () => void;
@@ -15,6 +17,8 @@ interface NavbarStoreType {
     sethandlePopupMenu: (handlePopupMenu:number | null) => void;
     setBasket:(newBasket: VariantsType[]) => void;
     removeFromBasket:(variantToRemove:VariantsType) => void;
+    setSearch:(search:string | undefined) => void,
+    setSearchResults: (searchResults: ProductInfo[] | undefined) => void;
 }
 
 export const navBarStore = create<NavbarStoreType>()((set) => ({
@@ -24,6 +28,8 @@ export const navBarStore = create<NavbarStoreType>()((set) => ({
     handleAccount:false,
     handlePopupMenu:null,
     basket:[],
+    search:undefined,
+    searchResults:undefined,
     setCategories: (categories) => set({categories}),
     sethandleMenu: () => set((state) => ({handleMenu: !state.handleMenu})),
     sethandleBasket: () => set((state) => ({handleBasket: !state.handleBasket})),
@@ -35,4 +41,6 @@ export const navBarStore = create<NavbarStoreType>()((set) => ({
             (variant) => variant.id !== variantToRemove.id
         ),
     })),
+    setSearch:(search) => set({search}),
+    setSearchResults: (searchResults) => set({searchResults}),
 }));
