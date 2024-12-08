@@ -61,7 +61,6 @@ export type {default as ProductDetailType, SizeType,VariantsType} from '../types
 export type {default as CategoriesType} from '../types/navbarTypes.ts';
 export type {default as AccountSettingsType} from '../types/AccountSettingsType.ts';
 export type {AddressType, CreditCardsType, submitFormType, DeliveryType,} from '../types/PaymentTypes.ts';
-export type {SearchResultType} from '../types/SearchResultType.ts';
 
 // Store
 export {navBarStore} from '../store/NavbarStore.ts';
