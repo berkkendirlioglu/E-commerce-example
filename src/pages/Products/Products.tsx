@@ -35,11 +35,6 @@ const Products = () => {
   const [moreProducts, setMoreProducts] = useState<boolean>(true);
   const {mainCategory} = useParams();
 
-  console.log("all products:",allProducts);
-  console.log("data:",data)
-  console.log("total count:",totalCount);
-  console.log("offset number:",offset);
-
   useEffect(() => {
     setAllProducts(products);
     setMoreProducts(true);

@@ -136,7 +136,7 @@ function Payment() {
         <div className={`${styles["complete-delivery-wrapper"]}`}>
           <img
             width={150}
-            src="https://toppng.com/uploads/preview/like-yellow-icon-like-icon-yellow-11553392640ctcuya9tln.png"
+            src="https://i.imgur.com/oFOjevY.png"
             alt=""
           />
           <h3 className={`${styles["complete-title"]}`}>
@@ -172,7 +172,7 @@ function Payment() {
               </div>
 
               <div className={`${styles["step-content"]}`}>
-                <div className={`${styles["step-title-wrapper"]}`}>
+                <div onClick={() => setCurrentStep(1)} className={`${styles["step-title-wrapper"]}`}>
                   <h5 className={`${styles["step-title"]}`}>Adres</h5>
                 </div>
 
@@ -268,7 +268,7 @@ function Payment() {
               </div>
 
               <div className={`${styles["step-content"]}`}>
-                <div className={`${styles["step-title-wrapper"]}`}>
+                <div onClick={() => setCurrentStep(2)} className={`${styles["step-title-wrapper"]}`}>
                   <h5 className={`${styles["step-title"]}`}>Kargo</h5>
                 </div>
 
@@ -349,7 +349,7 @@ function Payment() {
               </div>
 
               <div className={`${styles["step-content"]}`}>
-                <div className={`${styles["step-title-wrapper"]}`}>
+                <div onClick={() => setCurrentStep(3)} className={`${styles["step-title-wrapper"]}`}>
                   <h5 className={`${styles["step-title"]}`}>Ödeme</h5>
                 </div>
 
@@ -439,7 +439,7 @@ function Payment() {
                       </div>
 
                       <button className={`${styles["next-step-button"]}`}>
-                        Ödeme ile Devam et
+                        Ödemeyi Tamamla
                       </button>
                     </form>
                   </div>

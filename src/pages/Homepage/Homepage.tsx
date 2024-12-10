@@ -60,7 +60,7 @@ const Homepage = () => {
                     </h2>
 
                     <div className={`${styles["button-container"]}`}>
-                      <NavLink to={index === 5 ? "/all-products" : "/"} className={`${styles["inspect-button"]}`}>
+                      <NavLink to={Cards.link} className={`${styles["inspect-button"]}`}>
                         <span className={`${styles["inspect-text"]}`}>
                           İNCELE
                         </span>

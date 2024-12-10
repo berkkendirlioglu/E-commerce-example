@@ -7,7 +7,7 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { NavLink } from "react-router-dom";
 
-const BASE_URL:string = "https://fe1111.projects.academy.onlyjs.com"
+const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
 
 function MyAccount() {
   const [activeSection, setactiveSection] = useState<
@@ -29,8 +29,8 @@ function MyAccount() {
   useEffect(() => {
     setDeliveries(() => {
       const arrayDeliveries = localStorage.getItem("completeDelivery");
-      return arrayDeliveries ? JSON.parse(arrayDeliveries) : []
-    })
+      return arrayDeliveries ? JSON.parse(arrayDeliveries) : [];
+    });
   }, []);
 
   const accountSubmit: SubmitHandler<AccountSettingsType> = (data) => {
@@ -242,10 +242,7 @@ function MyAccount() {
                                     className={`${styles["product-img-wrapper"]}`}
                                   >
                                     <img
-                                      src={
-                                        BASE_URL +
-                                        product.photo_src
-                                      }
+                                      src={BASE_URL + product.photo_src}
                                       alt=""
                                     />
                                   </div>
@@ -428,8 +425,7 @@ function MyAccount() {
                               >
                                 <img
                                   src={
-                                    BASE_URL +
-                                    delivery.products![0].photo_src
+                                    BASE_URL + delivery.products![0].photo_src
                                   }
                                   alt={delivery.products![0].name}
                                   title={delivery.products![0].name}

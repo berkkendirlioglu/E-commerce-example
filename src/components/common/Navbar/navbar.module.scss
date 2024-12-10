@@ -285,7 +285,8 @@ $black-color:rgba(0,0,0,1);
                                     }
                                 }
                                 .products-wrapper{
-                                    height: 82vh;
+                                    height: auto;
+                                    max-height: 71vh;
                                     width: 100%;
                                     overflow-y: scroll;
                                     padding: .5rem .5rem;
@@ -474,6 +475,18 @@ $black-color:rgba(0,0,0,1);
                                             }
                                         }
                                     }
+                                    .title-wrapper{
+                                        width: 100%;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        padding: 0 0 1rem 0;
+                                        .top-seller-title{
+                                            font-size: 24px;
+                                            font-weight: bold;
+                                            text-transform: uppercase;
+                                        }
+                                    }
                                 }
                                 .children-links-wrapper{
                                     display: flex;
@@ -649,8 +662,8 @@ $black-color:rgba(0,0,0,1);
                         width: auto;
                         gap: 0;
                         .search-wrapper{
-                            position: fixed;
-                            top: 9%;
+                            position: absolute;
+                            top: 100%;
                             left: 0;
                             width: 100%;
                             &::after{
@@ -671,6 +684,16 @@ $black-color:rgba(0,0,0,1);
                             }
                             .search-button{
                                 display: none;
+                            }
+                            .search-results-wrapper{
+                                justify-content: center;
+                                align-items: start;
+                                top: 100%;
+                                padding: .5rem 0;
+                                .search-results{
+                                    transform: translate(0,0);
+                                    width: 97%;
+                                }
                             }
                         }
                         .account-wrapper{
@@ -697,18 +720,18 @@ $black-color:rgba(0,0,0,1);
             &:nth-child(2){
                 .wrapper-container{
                     .links-wrapper{
-                        position: fixed;
-                        top: 9%;
+                        position: absolute;
+                        top: 100%;
                         left: 0;
                         flex-direction: column;
                         justify-content: start;
                         align-items: start;
                         width: 350px;
-                        height: 91%;
+                        height: 100vh;
                         background: $white-color;
-                        transform: translateX(-300px);
+                        transform: translateX(-100%);
                         transition: transform .1s linear;
-                        visibility: hidden;
+                        
                         .link{
                             color: $black-color;
                             font-size: 20px;
@@ -726,13 +749,11 @@ $black-color:rgba(0,0,0,1);
                             display: flex;
                             flex-direction: column;
                             padding: .5rem;
+                            gap: 1rem;
                             .other-link{
                                 font-size: 18px;
                                 text-decoration: none;
                                 color: $black-color;
-                                &:nth-child(2){
-                                    margin: 1rem 0;
-                                }
                             }
                         }
                         .pop-up-wrapper{

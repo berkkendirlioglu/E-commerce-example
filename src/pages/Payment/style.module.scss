@@ -9,7 +9,7 @@
     .payment-proccess-wrapper {
       display: flex;
       flex-direction: column;
-      flex: 1 0 660px;
+      flex: 1 0 50%;
       .step-by-proccess{
         display: flex;
         width: 100%;
@@ -37,6 +37,7 @@
           padding: 1rem 1rem 1rem 0;
           width: 100%;
           .step-title-wrapper {
+            cursor: pointer;
             .step-title {
               font-size: 22px;
               font-weight: bold;
@@ -195,7 +196,7 @@
     .basket-products-wrapper{
       display: flex;
       flex-direction: column;
-      flex: 1 0 658px;
+      flex: 1 0 50%;
       padding: 1rem;
       .basket-product-content{
         max-height: 400px;
@@ -296,6 +297,7 @@
     align-items: center;
     padding: 7rem 0;
     gap: 1.6rem;
+    text-align: center;
     .my-account-link{
       background: #000;
       color: #fff;
@@ -319,5 +321,24 @@
     .payment-wrapper {
       max-width: 1320px;
     }
+  }
+}
+
+@media (max-width:992px){
+  .payment-container{
+    .payment-wrapper{
+      .payment-proccess-wrapper{
+        flex: 1 0 100%;
+      }
+      .basket-products-wrapper{
+        flex: 1 0 100%;
+      }
+    }
+  }
+}
+
+@media (max-width:768px){
+  .payment-container{
+    padding: 4rem 0;
   }
 }

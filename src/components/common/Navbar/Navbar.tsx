@@ -118,9 +118,9 @@ const Navbar = () => {
     localStorage.setItem("basket", JSON.stringify(removedItem));
   };
 
-  if(searchResults?.length! > 0){
+  if (searchResults?.length! > 0 || handleBasket) {
     document.body.style.overflow = "hidden";
-  }else{
+  } else {
     document.body.style.overflow = "";
   }
 
@@ -148,42 +148,73 @@ const Navbar = () => {
               <input
                 onChange={(e) => setSearch(e.target.value)}
                 value={search}
-                className={`${styles["search"]} ${searchResults?.length! > 0 ? styles["active-input"]: ""}`}
+                className={`${styles["search"]} ${
+                  searchResults?.length! > 0 ? styles["active-input"] : ""
+                }`}
                 placeholder="Aradığınız ürünü yazınız"
                 id="Search"
                 type="text"
               />
-              <label className={`${styles["search-button"]} ${searchResults?.length! > 0 ? styles["active-input"]: ""}`} htmlFor="Search">
+              <label
+                className={`${styles["search-button"]} ${
+                  searchResults?.length! > 0 ? styles["active-input"] : ""
+                }`}
+                htmlFor="Search"
+              >
                 ARA
               </label>
 
               {searchResults?.length! > 0 && (
-                <div onClick={() => setSearch("")} className={`${styles["search-results-wrapper"]}`}>
+                <div
+                  onClick={() => setSearch("")}
+                  className={`${styles["search-results-wrapper"]}`}
+                >
                   <div className={`${styles["search-results"]}`}>
                     {searchResults?.map((result, index) => (
-
-                      <NavLink to={`/all-products/${result.slug}`} key={`product-${index}`} className={`${styles["product-box"]}`}>
-
+                      <NavLink
+                        to={`/all-products/${result.slug}`}
+                        key={`product-${index}`}
+                        className={`${styles["product-box"]}`}
+                      >
                         <div className={`${styles["product-content-wrapper"]}`}>
-                          
                           <div className={`${styles["product-img-wrapper"]}`}>
-                            <img src={BASE_URL+result.photo_src} alt={result.name} />
+                            <img
+                              src={BASE_URL + result.photo_src}
+                              alt={result.name}
+                            />
                           </div>
 
                           <div className={`${styles["product-name-overview"]}`}>
                             <strong>{result.name}</strong>
-                            <span className={`${styles["product-overview"]}`}>{result.short_explanation}</span>
+                            <span className={`${styles["product-overview"]}`}>
+                              {result.short_explanation}
+                            </span>
                           </div>
                         </div>
 
                         {result.price_info.discounted_price ? (
                           <div className={`${styles["product-price-wrapper"]}`}>
-                            <span className={`${styles["discount-price"]}`}>{Math.floor(Number(result.price_info.discounted_price)).toLocaleString("tr-TR")}&nbsp;TL</span>
-                            <span className={`${styles["total-price"]} ${result.price_info.discounted_price ? styles["undiscount"]:""}`}>{result.price_info.total_price}&nbsp;TL</span>
+                            <span className={`${styles["discount-price"]}`}>
+                              {Math.floor(
+                                Number(result.price_info.discounted_price)
+                              ).toLocaleString("tr-TR")}
+                              &nbsp;TL
+                            </span>
+                            <span
+                              className={`${styles["total-price"]} ${
+                                result.price_info.discounted_price
+                                  ? styles["undiscount"]
+                                  : ""
+                              }`}
+                            >
+                              {result.price_info.total_price}&nbsp;TL
+                            </span>
                           </div>
-                        ):(
+                        ) : (
                           <div className={`${styles["product-price-wrapper"]}`}>
-                            <span className={`${styles["total-price"]}`}>{result.price_info.total_price}&nbsp;TL</span>
+                            <span className={`${styles["total-price"]}`}>
+                              {result.price_info.total_price}&nbsp;TL
+                            </span>
                           </div>
                         )}
                       </NavLink>
@@ -376,6 +407,7 @@ const Navbar = () => {
 
               <div className={`${styles["basket-button-wrapper"]}`}>
                 <NavLink
+                  onClick={sethandleBasket}
                   to={basket.length > 0 ? "/payment" : "/"}
                   className={`${styles["basket-button"]}`}
                 >
@@ -398,7 +430,7 @@ const Navbar = () => {
             }`}
           >
             {categories?.data.data.map((links, index) => (
-              <React.Fragment key={links.name}>
+              <React.Fragment key={`categories-${index}`}>
                 <NavLink
                   onClick={(e) => handleLink(e, index)}
                   className={`${styles["link"]}`}
@@ -407,7 +439,7 @@ const Navbar = () => {
                     handleMenu ? "" : sethandlePopupMenu(index)
                   }
                   to={handleMenu ? "#" : `/&main_category=${links.id}`}
-                  key={index}
+                  key={`categories-link-${index}`}
                 >
                   <span className={`${styles["link-text"]}`}>{links.name}</span>
                   <i
@@ -420,7 +452,7 @@ const Navbar = () => {
                 </NavLink>
 
                 {handlePopupMenu === index && (
-                  <React.Fragment key={links.slug}>
+                  <React.Fragment key={`pop-up-${index}`}>
                     <div
                       onMouseEnter={() => sethandlePopupMenu(index)}
                       className={`${styles["pop-up-wrapper"]} ${
@@ -436,9 +468,14 @@ const Navbar = () => {
                         }
                       >
                         <div className={`${styles["top-seller-wrapper"]}`}>
-                          {links.top_sellers.map((top_seller) => (
+                          <div className={`${styles["title-wrapper"]}`}>
+                            <h6 className={`${styles["top-seller-title"]}`}>
+                              Çok Satanlar
+                            </h6>
+                          </div>
+                          {links.top_sellers.map((top_seller, index) => (
                             <NavLink
-                              key={top_seller.name}
+                              key={`top-seller-${index}`}
                               className={`${styles["top-seller-link"]}`}
                               to={`/all-products/${top_seller.slug}`}
                             >
@@ -475,13 +512,15 @@ const Navbar = () => {
                               </button>
                             </div>
 
-                            {links.children.map((childlinks) => (
-                              <>
+                            {links.children.map((childlinks, index) => (
+                              <React.Fragment
+                                key={`child-links-content-${index}`}
+                              >
                                 <NavLink
-                                  key={childlinks.name}
+                                  key={`child-links-${index}`}
                                   className={`${styles["child-title-link"]}`}
                                   to={`/&sub_category=${childlinks.id}`}
-                                  // onClick={sethandleMenu}
+                                  onClick={() => {window.innerWidth <= 768 && sethandleMenu()}}
                                 >
                                   <h6
                                     className={`${styles["child-title-text"]}`}
@@ -489,16 +528,18 @@ const Navbar = () => {
                                     {childlinks.name}
                                   </h6>
                                 </NavLink>
-                                {childlinks.sub_children.map((sub_children) => (
-                                  <NavLink
-                                    key={sub_children.name}
-                                    className={`${styles["subchild-link"]}`}
-                                    to={`/all-products/${sub_children.slug}`}
-                                  >
-                                    {sub_children.name}
-                                  </NavLink>
-                                ))}
-                              </>
+                                {childlinks.sub_children.map(
+                                  (sub_children, index) => (
+                                    <NavLink
+                                      key={`sub-children-links-${index}`}
+                                      className={`${styles["subchild-link"]}`}
+                                      to={`/all-products/${sub_children.slug}`}
+                                    >
+                                      {sub_children.name}
+                                    </NavLink>
+                                  )
+                                )}
+                              </React.Fragment>
                             ))}
                           </div>
                         </div>
@@ -508,21 +549,34 @@ const Navbar = () => {
                 )}
               </React.Fragment>
             ))}
-            <NavLink className={`${styles["link"]}`} to={"/all-products"}>
+            <NavLink onClick={() => {window.innerWidth <= 768 && sethandleMenu()}} className={`${styles["link"]}`} to={"/all-products"}>
               TÜM ÜRÜNLER
             </NavLink>
 
             <div className={`${styles["other-links-wrapper"]}`}>
-              <NavLink className={`${styles["other-link"]}`} to={"/my-account"}>
+              <NavLink onClick={sethandleMenu}
+                className={`${styles["other-link"]}`}
+                to={session_id ? "/my-account" : "/account/login"}
+              >
                 HESABIM
               </NavLink>
-              <NavLink className={`${styles["other-link"]}`} to={"/"}>
+              <NavLink onClick={sethandleMenu} className={`${styles["other-link"]}`} to={"/"}>
                 MÜŞTERİ YORUMLARI
               </NavLink>
-              <NavLink className={`${styles["other-link"]}`} to={"/contact"}>
+              <NavLink onClick={sethandleMenu} className={`${styles["other-link"]}`} to={"/contact"}>
                 İLETİŞİM
               </NavLink>
+              {session_id && (
+                <NavLink
+                  onClick={() => {handleLogOut()}}
+                  className={`${styles["other-link"]}`}
+                  to={"/"}
+                >
+                  ÇIKIŞ YAP
+                </NavLink>
+              )}
             </div>
+
           </div>
         </div>
       </div>
