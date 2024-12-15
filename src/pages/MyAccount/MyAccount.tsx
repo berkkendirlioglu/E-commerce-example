@@ -179,6 +179,7 @@ function MyAccount() {
                   className={`${styles["phone-input"]}`}
                   defaultCountry="TR"
                   onChange={() => ""}
+                  maxLength={13}
                 />
 
                 <label className={`${styles["email"]}`} htmlFor="email">
@@ -586,6 +587,7 @@ function MyAccount() {
                       onChange={() => ""}
                       className={`${styles["address-phone-input"]}`}
                       defaultCountry="TR"
+                      maxLength={13}
                     />
 
                     <div className={`${styles["address-button-wrapper"]}`}>
