@@ -318,7 +318,7 @@ const Navbar = () => {
                 </button>
               </div>
 
-              <div className={`${styles["products-wrapper"]}`}>
+              <div className={`${basket.length > 0 ? styles["products-wrapper"]:styles["empty-products-wrapper"]}`}>
                 {basket.length > 0 ? (
                   <>
                     {basket.map((product) => (
