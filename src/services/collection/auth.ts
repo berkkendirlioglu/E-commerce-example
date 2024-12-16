@@ -1,7 +1,6 @@
 import { BASE_URL, FetchWithAuth } from "../api-client";
 import { isTokenExpired } from "../jwt-utils";
 import {
-  getAccessToken,
   getRefreshToken,
   setAccessToken,
   setTokens,
