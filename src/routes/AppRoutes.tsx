@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Homepage, Root, Contact, SSS, About, Login,Register, ForgotPassword, FetchProductDetail, ProductDetail, fetchAllProducts, Products, MyAccount, Payment,} from '../pages/index.ts';
+import { getAccessToken } from '../services/storage.ts';
 
-const session_id = localStorage.getItem("session_id");
+const access_token = getAccessToken();
 
 const router = createBrowserRouter([
     {
@@ -45,15 +46,15 @@ const router = createBrowserRouter([
           },
           {
             path:"my-account",
-            element:session_id ? <MyAccount/> : <Homepage/>
+            element:access_token ? <MyAccount/> : <Homepage/>
           },
           {
             path:"/account/login",
-            element:!session_id ? <Login/> : <MyAccount/>,
+            element:!access_token ? <Login/> : <MyAccount/>,
           },
           {
             path:"/account/register",
-            element:!session_id ? <Register/> : <Homepage/>,
+            element:!access_token ? <Register/> : <Homepage/>,
           },
           {
             path:"/account/forgot-password",

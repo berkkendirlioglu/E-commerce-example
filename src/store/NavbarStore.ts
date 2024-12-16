@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { ProductInfo, CategoriesType, VariantsType } from "../pages/index.ts";
+import { UsersType } from "../types/AccountType.ts";
 
 interface NavbarStoreType {
     categories:CategoriesType | null;
@@ -9,7 +10,8 @@ interface NavbarStoreType {
     handlePopupMenu:number | null,
     basket:VariantsType[],
     search:string | undefined,
-    searchResults:ProductInfo[] | undefined
+    searchResults:ProductInfo[] | undefined,
+    profileDetail:UsersType | undefined
     setCategories: (categories: CategoriesType) => void;
     sethandleMenu: () => void;
     sethandleBasket: () => void;
@@ -19,6 +21,7 @@ interface NavbarStoreType {
     removeFromBasket:(variantToRemove:VariantsType) => void;
     setSearch:(search:string | undefined) => void,
     setSearchResults: (searchResults: ProductInfo[] | undefined) => void;
+    setProfileDetail:(profileDetail:UsersType | undefined) => void;
 }
 
 export const navBarStore = create<NavbarStoreType>()((set) => ({
@@ -30,6 +33,7 @@ export const navBarStore = create<NavbarStoreType>()((set) => ({
     basket:[],
     search:undefined,
     searchResults:undefined,
+    profileDetail:undefined,
     setCategories: (categories) => set({categories}),
     sethandleMenu: () => set((state) => ({handleMenu: !state.handleMenu})),
     sethandleBasket: () => set((state) => ({handleBasket: !state.handleBasket})),
@@ -43,4 +47,5 @@ export const navBarStore = create<NavbarStoreType>()((set) => ({
     })),
     setSearch:(search) => set({search}),
     setSearchResults: (searchResults) => set({searchResults}),
+    setProfileDetail: (profileDetail) => set({profileDetail}),
 }));

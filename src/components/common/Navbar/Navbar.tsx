@@ -4,8 +4,11 @@ import axios from "axios";
 import { Logo_Siyah, navBarStore } from "../../../pages/index.ts";
 import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+import { getAccessToken, removeTokens } from "../../../services/storage.ts";
+import { getMyProfile } from "../../../services/collection/auth";
 
 const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
+const access_token = getAccessToken();
 
 const Navbar = () => {
   const {
@@ -17,6 +20,7 @@ const Navbar = () => {
     basket,
     search,
     searchResults,
+    profileDetail,
     setCategories,
     sethandleMenu,
     sethandleBasket,
@@ -25,6 +29,7 @@ const Navbar = () => {
     setBasket,
     setSearch,
     setSearchResults,
+    setProfileDetail,
   } = navBarStore(
     useShallow((state) => ({
       categories: state.categories,
@@ -35,6 +40,7 @@ const Navbar = () => {
       basket: state.basket,
       search: state.search,
       searchResults: state.searchResults,
+      profileDetail:state.profileDetail,
       setCategories: state.setCategories,
       sethandleMenu: state.sethandleMenu,
       sethandleBasket: state.sethandleBasket,
@@ -43,6 +49,7 @@ const Navbar = () => {
       setBasket: state.setBasket,
       setSearch: state.setSearch,
       setSearchResults: state.setSearchResults,
+      setProfileDetail:state.setProfileDetail,
     }))
   );
 
@@ -50,6 +57,14 @@ const Navbar = () => {
     axios.get(`${BASE_URL}/api/v1/categories`).then((response) => {
       setCategories(response.data);
     });
+
+    setBasket(JSON.parse(localStorage.getItem("basket") || "[]"));
+
+    async function userProfileLoader() {
+      const userProfileJson = await getMyProfile();
+      setProfileDetail(userProfileJson);
+    }
+    userProfileLoader();
   }, []);
 
   useEffect(() => {
@@ -77,16 +92,10 @@ const Navbar = () => {
     sethandlePopupMenu(index);
   };
 
-  const session_id = localStorage.getItem("session_id");
-
   const handleLogOut = () => {
-    localStorage.removeItem("session_id");
+    removeTokens();
     window.location.href = "/";
   };
-
-  useEffect(() => {
-    setBasket(JSON.parse(localStorage.getItem("basket") || "[]"));
-  }, []);
 
   const increaseProductCount = (productId: string) => {
     const updatedBasket = basket.map((item) =>
@@ -230,15 +239,15 @@ const Navbar = () => {
               className={`${styles["account-wrapper"]}`}
             >
               <NavLink
-                to={`${session_id ? "/my-account" : "/"}`}
+                to={`${access_token ? "/my-account" : "/"}`}
                 className={`${styles["account-button"]}`}
               >
                 <span className={`${styles["account-icon"]}`}>
                   <i className="bi bi-person"></i>
                 </span>
-                {session_id ? (
+                {access_token ? (
                   <span className={`${styles["account-text-icon"]}`}>
-                    HESABIM
+                    {profileDetail?.data.first_name.toLocaleUpperCase()}
                   </span>
                 ) : (
                   <span className={`${styles["account-text-icon"]}`}>
@@ -250,7 +259,7 @@ const Navbar = () => {
               {handleAccount && (
                 <div className={`${styles["account-hover-wrapper"]}`}>
                   <div className={`${styles["hover-wrapper-container"]}`}>
-                    {!session_id ? (
+                    {!access_token ? (
                       <div>
                         <NavLink
                           className={`${styles["account-link"]}`}
@@ -318,7 +327,13 @@ const Navbar = () => {
                 </button>
               </div>
 
-              <div className={`${basket.length > 0 ? styles["products-wrapper"]:styles["empty-products-wrapper"]}`}>
+              <div
+                className={`${
+                  basket.length > 0
+                    ? styles["products-wrapper"]
+                    : styles["empty-products-wrapper"]
+                }`}
+              >
                 {basket.length > 0 ? (
                   <>
                     {basket.map((product) => (
@@ -520,7 +535,9 @@ const Navbar = () => {
                                   key={`child-links-${index}`}
                                   className={`${styles["child-title-link"]}`}
                                   to={`/&sub_category=${childlinks.id}`}
-                                  onClick={() => {window.innerWidth <= 768 && sethandleMenu()}}
+                                  onClick={() => {
+                                    window.innerWidth <= 768 && sethandleMenu();
+                                  }}
                                 >
                                   <h6
                                     className={`${styles["child-title-text"]}`}
@@ -549,26 +566,43 @@ const Navbar = () => {
                 )}
               </React.Fragment>
             ))}
-            <NavLink onClick={() => {window.innerWidth <= 768 && sethandleMenu()}} className={`${styles["link"]}`} to={"/all-products"}>
+            <NavLink
+              onClick={() => {
+                window.innerWidth <= 768 && sethandleMenu();
+              }}
+              className={`${styles["link"]}`}
+              to={"/all-products"}
+            >
               TÜM ÜRÜNLER
             </NavLink>
 
             <div className={`${styles["other-links-wrapper"]}`}>
-              <NavLink onClick={sethandleMenu}
+              <NavLink
+                onClick={sethandleMenu}
                 className={`${styles["other-link"]}`}
-                to={session_id ? "/my-account" : "/account/login"}
+                to={access_token ? "/my-account" : "/account/login"}
               >
                 HESABIM
               </NavLink>
-              <NavLink onClick={sethandleMenu} className={`${styles["other-link"]}`} to={"/"}>
+              <NavLink
+                onClick={sethandleMenu}
+                className={`${styles["other-link"]}`}
+                to={"/"}
+              >
                 MÜŞTERİ YORUMLARI
               </NavLink>
-              <NavLink onClick={sethandleMenu} className={`${styles["other-link"]}`} to={"/contact"}>
+              <NavLink
+                onClick={sethandleMenu}
+                className={`${styles["other-link"]}`}
+                to={"/contact"}
+              >
                 İLETİŞİM
               </NavLink>
-              {session_id && (
+              {access_token && (
                 <NavLink
-                  onClick={() => {handleLogOut()}}
+                  onClick={() => {
+                    handleLogOut();
+                  }}
                   className={`${styles["other-link"]}`}
                   to={"/"}
                 >
@@ -576,7 +610,6 @@ const Navbar = () => {
                 </NavLink>
               )}
             </div>
-
           </div>
         </div>
       </div>

@@ -2,9 +2,11 @@ import { NavLink } from 'react-router-dom';
 import styles from './login.module.scss';
 import styled from 'styled-components';
 import {AccountButton} from '../index.ts'
-import User from '../../dummyData/Users.json';
-import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { FormEvent } from 'react';
+import { LoginPayload } from '../../types/AccountType.ts';
+import { api_key } from '../Register/Register.tsx';
+import { login } from '../../services/collection/auth.ts';
+import { removeTokens } from '../../services/storage.ts';
 
 export const LoginRegisterWrapper = styled.div`
     width: 40%;
@@ -20,29 +22,23 @@ export const LoginRegisterWrapper = styled.div`
     }
 `;
 
-interface LoginDataType {
-    email:string,
-    password:string,
-}
-
-
 const Login = () => {
-    const [loginData, setloginData] = useState<LoginDataType | undefined>();
-    const isUser = User.results.some((db) => {
-        return db.email === loginData?.email && db.password === loginData.password;
-    })
+    const handleLogin = async (e:FormEvent) => {
+        e.preventDefault();
+        const formEl = e.target as HTMLFormElement;
+        const formData = new FormData(formEl);
+        const data = Object.fromEntries(formData) as unknown as {username:string, password:string};
+        const modifyData:LoginPayload = {...data, api_key:api_key}
 
-    useEffect(() => {
-        if(isUser){
-            localStorage.setItem("session_id","4b4b6fce-9998-4ac9-b1bc-78064f5a7432");
+        const response = await login(modifyData);
+
+        if(response.access_token){
+            alert("Giriş Başarılı");
             window.location.href = "/";
+        }else{
+            alert("Şifre ya da e-mail yanlış");
+            removeTokens();
         }
-    }, [isUser]);
-
-    const {register, handleSubmit} = useForm();
-
-    const onSubmit = (d:any) => {
-        setloginData(d);
     }
 
   return (
@@ -58,11 +54,11 @@ const Login = () => {
 
                 <div className={`${styles["login-form-wrapper"]}`}>
 
-                    <form className={`${styles["login-form"]}`} onSubmit={handleSubmit(onSubmit)}>
+                    <form className={`${styles["login-form"]}`} onSubmit={handleLogin}>
                         <label className={`${styles["email-title"]}`} htmlFor="email">*E-Posta</label>
-                        <input value={"example@hotmail.com"} id={`${styles["email"]}`} {...register("email")} type="text" />
+                        <input name='username' id={`${styles["email"]}`} type="text" />
                         <label className={`${styles["pass-title"]}`} htmlFor="password">*Şifre</label>
-                        <input value={123456} id={`${styles["password"]}`} {...register("password")} type="password" />
+                        <input name='password' id={`${styles["password"]}`} type="password" />
                         <AccountButton content='GİRİŞ YAP'/>
                     </form>
 

@@ -1,10 +1,10 @@
 export default interface AccountSettingsType{
     title:string,
-    firstName:string,
-    lastName:string,
+    first_name:string,
+    last_name:string,
     email?:string,
     address:string,
     city:string,
     state:string,
-    phone:number,
+    phone_number:string,
 }

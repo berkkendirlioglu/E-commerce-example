@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import styles from "./style.module.scss";
-import Users from "../../dummyData/Users.json";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { AccountSettingsType, DeliveryType } from "../index.ts";
+import { AccountSettingsType, DeliveryType, navBarStore } from "../index.ts";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { NavLink } from "react-router-dom";
+import { UpdateMyProfile } from "../../services/collection/auth.ts";
+import { UpdateProfileType } from "../../types/AccountType.ts";
 
 const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
 
@@ -13,7 +14,6 @@ function MyAccount() {
   const [activeSection, setactiveSection] = useState<
     "accountInfo" | "delivery" | "address"
   >("accountInfo");
-  const [accountForm, setAccountForm] = useState<AccountSettingsType>();
   const [isAddress, setisAddress] = useState<boolean>();
   const [address, setAddress] = useState<AccountSettingsType[]>([]);
   const [Deliveries, setDeliveries] = useState<DeliveryType[] | undefined>(
@@ -25,6 +25,7 @@ function MyAccount() {
   const [deliveriesDetail, setdeliveriesDetail] = useState<DeliveryType[]>();
   const [DeliveryId, setDeliveryId] = useState<string>();
   const { register, handleSubmit } = useForm<AccountSettingsType>();
+  const { profileDetail } = navBarStore();
 
   useEffect(() => {
     setDeliveries(() => {
@@ -33,9 +34,17 @@ function MyAccount() {
     });
   }, []);
 
-  const accountSubmit: SubmitHandler<AccountSettingsType> = (data) => {
-    setAccountForm(data);
-    localStorage.setItem("account", JSON.stringify(accountForm));
+  const UpdateProfileSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const formEl = e.target as HTMLFormElement;
+    const formData = new FormData(formEl);
+    const data = Object.fromEntries(formData) as unknown as UpdateProfileType;
+    console.log(data);
+
+    await UpdateMyProfile(data);
+
+    window.location.reload();
   };
 
   const addressSubmit: SubmitHandler<AccountSettingsType> = (data) => {
@@ -71,8 +80,6 @@ function MyAccount() {
     }),
   ]);
 
-  const userData = Users.results[0];
-
   useEffect(() => {
     const filteredDelivery = Deliveries?.filter((delivery) => {
       return delivery.deliveryNumber === DeliveryId;
@@ -100,8 +107,6 @@ function MyAccount() {
     },
     0
   );
-
-  console.log(basketTotalPrice);
 
   return (
     <div className={`${styles["my-account-container"]}`}>
@@ -149,7 +154,7 @@ function MyAccount() {
               </div>
 
               <form
-                onSubmit={handleSubmit(accountSubmit)}
+                onSubmit={UpdateProfileSubmit}
                 className={`${styles["account-info-form"]}`}
                 action="#"
               >
@@ -157,7 +162,7 @@ function MyAccount() {
                   *Ad
                 </label>
                 <input
-                  {...register("firstName")}
+                  name="first_name"
                   type="text"
                   id={`${styles["firstName"]}`}
                 />
@@ -166,7 +171,7 @@ function MyAccount() {
                   *Soyad
                 </label>
                 <input
-                  {...register("lastName")}
+                  name="last_name"
                   type="text"
                   id={`${styles["lastName"]}`}
                 />
@@ -174,23 +179,23 @@ function MyAccount() {
                 <label className={`${styles["phone"]}`} htmlFor="phone">
                   Telefon
                 </label>
-                <PhoneInput
-                  {...register("phone")}
+                {/* <PhoneInput
+                  name="phone_number"
                   className={`${styles["phone-input"]}`}
                   defaultCountry="TR"
                   onChange={() => ""}
                   maxLength={13}
+                /> */}
+                <input
+                  name="phone_number"
+                  className={`${styles["phone-input"]}`}
+                  type="text"
                 />
 
                 <label className={`${styles["email"]}`} htmlFor="email">
                   E-Posta
                 </label>
-                <input
-                  type="email"
-                  id={`${styles["email"]}`}
-                  disabled
-                  value={userData.email}
-                />
+                <input type="email" id={`${styles["email"]}`} disabled value={profileDetail?.data.email ? profileDetail.data.email : ""}/>
 
                 <div className={`${styles["info-button-wrapper"]}`}>
                   <button className={`${styles["info-button"]}`}>Kaydet</button>
@@ -533,7 +538,7 @@ function MyAccount() {
                       *Ad
                     </label>
                     <input
-                      {...register("firstName")}
+                      {...register("first_name")}
                       id={`${styles["address-firstName-input"]}`}
                       type="text"
                       required
@@ -543,7 +548,7 @@ function MyAccount() {
                       *Soyad
                     </label>
                     <input
-                      {...register("lastName")}
+                      {...register("last_name")}
                       id={`${styles["address-lastName-input"]}`}
                       type="text"
                       required
@@ -583,7 +588,7 @@ function MyAccount() {
                       *Telefon
                     </label>
                     <PhoneInput
-                      {...register("phone")}
+                      {...register("phone_number")}
                       onChange={() => ""}
                       className={`${styles["address-phone-input"]}`}
                       defaultCountry="TR"

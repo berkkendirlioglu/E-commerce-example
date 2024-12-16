@@ -168,10 +168,11 @@ $black-color:rgba(0,0,0,1);
                             position: relative;
                             .account-button{
                                 display: flex;
-                                justify-content: space-around;
+                                justify-content: center;
                                 align-items: center;
+                                gap: .3rem;
                                 width: 130px;
-                                padding: .2rem .5rem;
+                                padding: .3rem 0;
                                 color: $grey-color;
                                 text-decoration: none;
                                 border:2px solid $grey-color;
