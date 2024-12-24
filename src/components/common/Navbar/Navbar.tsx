@@ -5,7 +5,12 @@ import { Logo_Siyah, navBarStore } from "../../../pages/index.ts";
 import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { getAccessToken, removeTokens } from "../../../services/storage.ts";
-import { getMyProfile } from "../../../services/collection/auth";
+import {
+  AddBasketToProduct,
+  DeleteToProductFromBasket,
+  GetMyBasket,
+  getMyProfile,
+} from "../../../services/collection/auth";
 
 const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
 const access_token = getAccessToken();
@@ -40,7 +45,7 @@ const Navbar = () => {
       basket: state.basket,
       search: state.search,
       searchResults: state.searchResults,
-      profileDetail:state.profileDetail,
+      profileDetail: state.profileDetail,
       setCategories: state.setCategories,
       sethandleMenu: state.sethandleMenu,
       sethandleBasket: state.sethandleBasket,
@@ -49,7 +54,7 @@ const Navbar = () => {
       setBasket: state.setBasket,
       setSearch: state.setSearch,
       setSearchResults: state.setSearchResults,
-      setProfileDetail:state.setProfileDetail,
+      setProfileDetail: state.setProfileDetail,
     }))
   );
 
@@ -58,14 +63,21 @@ const Navbar = () => {
       setCategories(response.data);
     });
 
-    setBasket(JSON.parse(localStorage.getItem("basket") || "[]"));
-
     async function userProfileLoader() {
       const userProfileJson = await getMyProfile();
       setProfileDetail(userProfileJson);
     }
-    userProfileLoader();
+
+    async function FetchMyBasket() {
+      const response = await GetMyBasket();
+      setBasket(response);
+    }
+    if(access_token){
+      userProfileLoader();
+      FetchMyBasket();
+    }
   }, []);
+  
 
   useEffect(() => {
     if (search?.trim() === "") {
@@ -82,6 +94,37 @@ const Navbar = () => {
       });
   }, [search]);
 
+  const IncreaseProductToBasket = async (id: string, variant_id: string) => {
+    const increaseProductPiece = {
+      product_id: id,
+      product_variant_id: variant_id,
+      pieces: 1,
+    };
+
+    const response = await AddBasketToProduct(increaseProductPiece);
+    if (response.status === "success") {
+      const currentBasket = await GetMyBasket();
+      setBasket(currentBasket);
+    } else {
+      alert("Ürün sayısı arttırılamadı.");
+    }
+  };
+
+  const DecreaseOrDeleteProduct = async (id: string, variant_id: string) => {
+    const productToDeleted = {
+      product_id: id,
+      product_variant_id: variant_id,
+      pieces: 1,
+    };
+    const response = await DeleteToProductFromBasket(productToDeleted);
+    if (response.status === "success") {
+      const currentBasket = await GetMyBasket();
+      setBasket(currentBasket);
+    } else {
+      alert("Ürün silinirken bir hata oluştu");
+    }
+  };
+
   const handleLink = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     index: number
@@ -95,36 +138,6 @@ const Navbar = () => {
   const handleLogOut = () => {
     removeTokens();
     window.location.href = "/";
-  };
-
-  const increaseProductCount = (productId: string) => {
-    const updatedBasket = basket.map((item) =>
-      item.id === productId ? { ...item, count: item.count! + 1 } : item
-    );
-
-    setBasket(updatedBasket);
-    localStorage.setItem("basket", JSON.stringify(updatedBasket));
-  };
-
-  const decreaseProductCount = (productId: string) => {
-    const updatedBasket = basket.map((item) =>
-      item.id === productId && item.count! > 1
-        ? { ...item, count: item.count! - 1 }
-        : item
-    );
-
-    setBasket(updatedBasket);
-    localStorage.setItem("basket", JSON.stringify(updatedBasket));
-  };
-
-  const basketTotalPrice = basket.reduce((accumulator, item) => {
-    return accumulator + item.count! * item.price.total_price;
-  }, 0);
-
-  const removeBasketToProduct = (variantId: string) => {
-    const removedItem = basket.filter((remove) => remove.id !== variantId);
-    setBasket(removedItem);
-    localStorage.setItem("basket", JSON.stringify(removedItem));
   };
 
   if (searchResults?.length! > 0 || handleBasket) {
@@ -297,7 +310,7 @@ const Navbar = () => {
               >
                 <i className={`${styles["basket-icon"]} bi bi-cart3 `}>
                   <p className={`${styles["product-count"]}`}>
-                    {basket.length}
+                    {basket?.data.items?.length! ?? 0}
                   </p>
                 </i>
 
@@ -329,73 +342,81 @@ const Navbar = () => {
 
               <div
                 className={`${
-                  basket.length > 0
+                  basket?.data.items?.length! > 0
                     ? styles["products-wrapper"]
                     : styles["empty-products-wrapper"]
                 }`}
               >
-                {basket.length > 0 ? (
+                {basket?.data.items?.length! > 0 ? (
                   <>
-                    {basket.map((product) => (
+                    {basket?.data.items?.map((product) => (
                       <div className={`${styles["product-box"]}`}>
                         <div className={`${styles["product-content"]}`}>
                           <div className={`${styles["product-img-wrapper"]}`}>
                             <img
                               className={`${styles["basket-product-img"]}`}
-                              src={`${BASE_URL + product.photo_src}`}
+                              src={`${
+                                BASE_URL +
+                                product.product_variant_detail.photo_src
+                              }`}
                               alt=""
                             />
                           </div>
                           <div className={`${styles["product-info"]}`}>
                             <span className={`${styles["product-title"]}`}>
-                              {product.name}
+                              {product.product}
                             </span>
                             <span className={`${styles["product-aroma"]}`}>
-                              {product.aroma}
+                              {product.product_variant_detail.aroma}
                             </span>
                             <span className={`${styles["product-gram"]}`}>
-                              {product.size.gram
+                              {product.product_variant_detail.size.gram
                                 ? `${
-                                    product.size.gram >= 1000
-                                      ? `${(product.size.gram / 1000).toFixed(
-                                          1
-                                        )}KG`
-                                      : `${product.size.gram}G`
+                                    product.product_variant_detail.size.gram >=
+                                    1000
+                                      ? `${(
+                                          product.product_variant_detail.size
+                                            .gram / 1000
+                                        ).toFixed(1)}KG`
+                                      : `${product.product_variant_detail.size.gram}G`
                                   }`
-                                : `${product.size.pieces} Adet ${product.size.total_services} Servis`}
+                                : `${product.product_variant_detail.size.pieces} Adet ${product.product_variant_detail.size.total_services} Servis`}
                             </span>
                           </div>
                         </div>
 
                         <div className={`${styles["product-count-price"]}`}>
                           <div className={`${styles["product-price"]}`}>
-                            {product.price.total_price * product.count!}&nbsp;TL
+                            {product.total_price}&nbsp;TL
                           </div>
                           <div className={`${styles["product-count"]}`}>
-                            {product.count === 1 ? (
-                              <button
-                                onClick={() =>
-                                  removeBasketToProduct(product.id)
-                                }
-                                className={`${styles["trash-button"]}`}
-                              >
+                            <button
+                              onClick={() =>
+                                DecreaseOrDeleteProduct(
+                                  product.product_id,
+                                  product.product_variant_id
+                                )
+                              }
+                              className={`${styles["minus-trash-button"]}`}
+                            >
+                              {product.pieces === 1 ? (
                                 <i className="bi bi-trash2"></i>
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => decreaseProductCount(product.id)}
-                                className={`${styles["minus-button"]}`}
-                              >
+                              ) : (
                                 <i className="bi bi-dash"></i>
-                              </button>
-                            )}
+                              )}
+                            </button>
                             <span
                               className={`${styles["product-current-count"]}`}
                             >
-                              {product.count}
+                              {product.pieces}
                             </span>
                             <button
-                              onClick={() => increaseProductCount(product.id)}
+                              onClick={() =>
+                                IncreaseProductToBasket(
+                                  product.product_id,
+                                  product.product_variant_id
+                                )
+                              }
                               className={`${styles["plus-button"]}`}
                             >
                               <i className="bi bi-plus-lg"></i>
@@ -414,23 +435,28 @@ const Navbar = () => {
                 )}
               </div>
 
-              <div className={`${styles["basket-total-price"]}`}>
-                <span className={`${styles["total-price"]}`}>
-                  TOPLAM {basketTotalPrice} TL
-                </span>
-              </div>
+              {basket?.data.items?.length! > 0 && (
+                <div className={`${styles["basket-total-price"]}`}>
+                  <span className={`${styles["total-price"]}`}>
+                    TOPLAM {basket?.data.total_price!.toLocaleString("tr-TR")}{" "}
+                    TL
+                  </span>
+                </div>
+              )}
 
               <div className={`${styles["basket-button-wrapper"]}`}>
-                <NavLink
-                  onClick={sethandleBasket}
-                  to={basket.length > 0 ? "/payment" : "/"}
-                  className={`${styles["basket-button"]}`}
-                >
-                  DEVAM ET&nbsp;
-                  <i
-                    className={`${styles["basket-icon"]} bi bi-caret-right-fill`}
-                  ></i>
-                </NavLink>
+                {basket?.data.items?.length! > 0 && (
+                  <NavLink
+                    onClick={sethandleBasket}
+                    to={"/payment"}
+                    className={`${styles["basket-button"]}`}
+                  >
+                    DEVAM ET&nbsp;
+                    <i
+                      className={`${styles["basket-icon"]} bi bi-caret-right-fill`}
+                    ></i>
+                  </NavLink>
+                )}
               </div>
             </div>
           </div>

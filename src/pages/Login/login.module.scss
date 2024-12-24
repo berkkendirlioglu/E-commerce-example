@@ -56,6 +56,25 @@
         }
       }
   }
+  .login-successfully-container{
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%,-100px);
+    width: auto;
+    height: auto;
+    z-index: 99999;
+    transition: all .1s linear;
+    .login-successfully-text{
+      padding: 1rem 2rem;
+      background: #5dce76;
+      border-radius: 5px;
+      color: #fff;
+    }
+  }
+  .show-successfully-container{
+    transform: translate(-50%,100px);
+  }
 }
 
 @media (min-width: 1400px) {

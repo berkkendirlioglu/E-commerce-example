@@ -11,7 +11,9 @@ import {
 import { useLoaderData, LoaderFunction, Params } from "react-router-dom";
 import { ReactNode, useEffect, useState } from "react";
 import CommentsGraphs from "../../components/specific/CommentsGraphs/CommentGraphs.tsx";
-import { useShallow } from "zustand/react/shallow";
+import { BasketProductsPayload } from "../../types/ProductDetailType.ts";
+import { AddBasketToProduct, GetMyBasket } from "../../services/collection/auth.ts";
+import { getAccessToken } from "../../services/storage.ts";
 
 const Accordion = ({
   title,
@@ -115,8 +117,10 @@ const getBackgroundColor = (aroma: string) => {
     "Tigers Blood": "rgba(172, 33, 34, 1)",
   };
 
-  return Aromas[aroma] || "rgb(78, 78, 78, 1)";
+  return Aromas[aroma] || "rgba(78, 78, 78, 1)";
 };
+
+const access_token = getAccessToken();
 
 const ProductDetail = () => {
   const { ProductDetail } = useLoaderData() as {
@@ -129,11 +133,8 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState<SizeType>();
   const [productCount, setProductCount] = useState<number>(1);
   const [addedBasket, setAddedBasket] = useState<boolean>(false);
-  const { setBasket } = navBarStore(
-    useShallow((state) => ({
-      setBasket: state.setBasket,
-    }))
-  );
+  const [notLogged, setNotLogged] = useState<boolean>(false);
+  const {setBasket} = navBarStore();
 
   const uniqueAromas = ProductDetail.data.variants.filter(
     (aromas, index, self) =>
@@ -147,7 +148,7 @@ const ProductDetail = () => {
   useEffect(() => {
     setSelectedAroma(uniqueAromas[0].aroma);
     setSelectedVariant([ProductDetail.data.variants[0]]);
-    setSelectedSize(selectedVariant[0].size);
+    setSelectedSize(ProductDetail.data.variants[0].size)
   }, [ProductDetail]);
 
   useEffect(() => {
@@ -180,44 +181,40 @@ const ProductDetail = () => {
     return <div>Yükleniyor...</div>;
   }
 
-  const AddBasketProduct = () => {
-    setAddedBasket(true);
-    const storedBasket = localStorage.getItem("basket");
-    const basketArray = storedBasket ? JSON.parse(storedBasket) : [];
+  const AddBasketProduct = async () => {
+    const basketProducts:BasketProductsPayload = {
+      product_id:ProductDetail.data.id,
+      product_variant_id:selectedVariant[0].id,
+      pieces:productCount,
+    }
 
-    const productName = ProductDetail.data.name;
-    const productCountVar = productCount;
+    if(access_token){
+      const response = await AddBasketToProduct(basketProducts)
 
-    const updatedVariants = selectedVariant.map((variant) => ({
-      ...variant,
-      name: productName,
-      count: productCountVar,
-    }));
+      if(response.status === "success"){
+        setAddedBasket(true);
+        const response = await GetMyBasket();
+        setBasket(response);
 
-    const updatedBasketArray = [...basketArray];
-
-    updatedVariants.forEach((newItem) => {
-      const existingItemIndex = updatedBasketArray.findIndex(
-        (item) => item.id === newItem.id
-      );
-
-      if (existingItemIndex !== -1) {
-        updatedBasketArray[existingItemIndex].count += newItem.count;
-      } else {
-        updatedBasketArray.push(newItem);
-      }
-    });
-
-    localStorage.setItem("basket", JSON.stringify(updatedBasketArray));
-    setBasket(updatedBasketArray);
-
+        setTimeout(() => {
+          setAddedBasket(false);
+        }, 2000);
+      }else{
+        alert("Ürün sepete eklenirken bir hata oluştu");
+      } 
+    }else{
+      setNotLogged(true);
+    }
     setTimeout(() => {
-      setAddedBasket(false);
-    }, 2000);
+      setNotLogged(false)
+    }, 3000);
   };
 
   return (
     <div className={`${styles["product-detail"]}`}>
+        <div className={`${styles["not-logged-container"]} ${notLogged ? styles["show-not-logged"] : ""}`}>
+          <span className={`${styles["not-logged-text"]}`}>Sepete ürün eklemek için giriş yapmalısınız!</span>
+        </div>
       <div className={`${styles["product-detail-container"]}`}>
         <div className={`${styles["detail-wrapper"]}`}>
           <div className={`${styles["details-img"]}`}>
@@ -266,7 +263,7 @@ const ProductDetail = () => {
                 {uniqueAromas.map((aromas) => (
                   <button
                     onClick={() => setSelectedAroma(aromas.aroma)}
-                    key={aromas.aroma}
+                    key={`unique-${aromas.aroma}`}
                     className={`${styles["flavor-btn"]} ${
                       selectedAroma === aromas.aroma ? styles["active"] : ""
                     }`}
@@ -461,7 +458,7 @@ const ProductDetail = () => {
                   </div>
                   {ProductDetail.data.explanation.nutritional_content.nutrition_facts.ingredients.map(
                     (facts) => (
-                      <div className={`${styles["facts-content"]}`}>
+                      <div key={`facts-${facts.name}`} className={`${styles["facts-content"]}`}>
                         <span className={`${styles["facts-name"]}`}>
                           {facts.name}
                         </span>

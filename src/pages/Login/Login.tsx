@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import styles from './login.module.scss';
 import styled from 'styled-components';
 import {AccountButton} from '../index.ts'
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { LoginPayload } from '../../types/AccountType.ts';
 import { api_key } from '../Register/Register.tsx';
 import { login } from '../../services/collection/auth.ts';
@@ -23,6 +23,7 @@ export const LoginRegisterWrapper = styled.div`
 `;
 
 const Login = () => {
+    const [isLogin, setIsLogin] = useState<boolean>(false);
     const handleLogin = async (e:FormEvent) => {
         e.preventDefault();
         const formEl = e.target as HTMLFormElement;
@@ -33,8 +34,13 @@ const Login = () => {
         const response = await login(modifyData);
 
         if(response.access_token){
-            alert("Giriş Başarılı");
-            window.location.href = "/";
+            setIsLogin(true)
+            setTimeout(() => {
+                setIsLogin(false);
+            }, 3000);
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 3500);
         }else{
             alert("Şifre ya da e-mail yanlış");
             removeTokens();
@@ -43,6 +49,9 @@ const Login = () => {
 
   return (
     <div className={`${styles["login-page"]}`}>
+        <div className={`${styles["login-successfully-container"]} ${isLogin ? styles["show-successfully-container"]:""}`}>
+            <span className={`${styles["login-successfully-text"]}`}>Giriş Başarılı!</span>
+        </div>
         <div className={`${styles["login-container"]}`}>
 
             <LoginRegisterWrapper>

@@ -12,6 +12,10 @@ import {
   UsersType,
   UpdateProfileType
 } from "../../types/AccountType";
+import { AllAddressType, CreateAddressResultType, AddressPayloadType } from "../../types/AddressType";
+import { BasketProductsPayload, BasketProductType } from "../../types/ProductDetailType";
+import { OrderToProductsPayload } from "../../types/PaymentTypes";
+import { AllOrderTypes, OrderDetailsType } from "../../types/OrderTypes";
 
 export async function register(data: RegisterPayload) {
   const response = await fetch(BASE_URL + "/auth/register", {
@@ -70,6 +74,7 @@ export async function refreshAccessToken() {
     method: "POST",
     headers: {
       Authorization: `Bearer ${refreshToken}`,
+      "Content-Type": "application/json",
     },
   });
 
@@ -91,28 +96,105 @@ export async function UpdateMyProfile(data:UpdateProfileType){
   return responseJson;
 }
 
-// export async function logout() {
-//   const refreshToken = getRefreshToken();
+export async function CreateNewAddress(data:AddressPayloadType){
+  const response = await FetchWithAuth("/users/addresses",{
+    method:"POST",
+    body:JSON.stringify(data),
+  })
 
-//   if (!refreshToken) {
-//     throw new Response(
-//       JSON.stringify({ message: "Refresh token is invalid" }),
-//       { status: 401, statusText:"Refresh token is invalid", headers: { "Content-Type": "application/json" } }
-//     );
-//   }
+  const responseJson = await response.json() as CreateAddressResultType;
 
-//   const response = await fetch(BASE_URL + "/api/auth/logout", {
-//     method: "POST",
-//     headers: {
-//       Authorization: `Bearer ${refreshToken}`,
-//     },
-//   });
+  return responseJson
+}
 
-//   const responseJson = (await response.json()) as {
-//     message: string;
-//   };
+export async function GetAllMyAddress() {
+  const response = await FetchWithAuth("/users/addresses?limit=10&offset=0",{
+    method:"GET",
+  })
 
-//   removeTokensAndAuthUser();
+  const responseJson = await response.json() as AllAddressType;
 
-//   return responseJson;
-// }
+  return responseJson
+}
+
+export async function DeleteMyAddress(addressId:string){
+  const response = await FetchWithAuth(`/users/addresses/${addressId}`,{
+    method:"DELETE"
+  });
+
+  const responseJson = await response.json() as {status:string, data:{}}
+
+  return responseJson;
+}
+
+export async function EditMyAddress({data,addressId}:{data:AddressPayloadType; addressId:string}){
+  const response = await FetchWithAuth(`/users/addresses/${addressId}`,{
+    method:"PUT",
+    body:JSON.stringify(data),
+  })
+
+  const responseJson = await response.json() as CreateAddressResultType;
+  
+  return responseJson;
+}
+
+export async function AddBasketToProduct(data:BasketProductsPayload){
+  const response = await FetchWithAuth("/users/cart",{
+    method:"POST",
+    body:JSON.stringify(data)
+  })
+  const responseJson = await response.json() as {status:string,data:{}}
+
+  return responseJson;
+}
+
+export async function GetMyBasket(){
+  const response = await FetchWithAuth("/users/cart",{
+    method:"GET"
+  })
+
+  const responseJson = await response.json() as BasketProductType
+
+  return responseJson;
+}
+
+export async function DeleteToProductFromBasket(data:BasketProductsPayload) {
+  const response = await FetchWithAuth("/users/cart",{
+    method:"DELETE",
+    body:JSON.stringify(data)
+  })
+  const responseJson = await response.json() as {status:string,data:{}}
+
+  return responseJson;
+}
+
+export async function OrderToProducts(data:OrderToProductsPayload){
+  const response = await FetchWithAuth("/orders/complete-shopping",{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
+
+  const responseJson = await response.json() as {status:string,data:{ order_no:string}}
+
+  return responseJson;
+}
+
+export async function GetMyAllOrder(){
+  const response = await FetchWithAuth("/orders",{
+    method:"GET"
+  })
+
+  const responseJson = await response.json() as AllOrderTypes;
+
+  return responseJson;
+}
+
+export async function GetMyOrderDetails(order_id:string) {
+  const response = await FetchWithAuth(`/orders/${order_id}`,{
+    method:"GET"
+  })
+
+  const responseJson = await response.json() as OrderDetailsType
+
+  return responseJson;
+}

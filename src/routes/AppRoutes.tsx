@@ -1,12 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Homepage, Root, Contact, SSS, About, Login,Register, ForgotPassword, FetchProductDetail, ProductDetail, fetchAllProducts, Products, MyAccount, Payment,} from '../pages/index.ts';
-import { getAccessToken } from '../services/storage.ts';
-
-const access_token = getAccessToken();
+import ErrorPage from '../pages/ErrorPage/ErrorPage.tsx';
 
 const router = createBrowserRouter([
     {
         path:"/",
+        errorElement:<ErrorPage/>,
         element:<Root/>,
         children:[
           {
@@ -46,15 +45,15 @@ const router = createBrowserRouter([
           },
           {
             path:"my-account",
-            element:access_token ? <MyAccount/> : <Homepage/>
+            element:<MyAccount/>
           },
           {
             path:"/account/login",
-            element:!access_token ? <Login/> : <MyAccount/>,
+            element:<Login/>,
           },
           {
             path:"/account/register",
-            element:!access_token ? <Register/> : <Homepage/>,
+            element:<Register/>
           },
           {
             path:"/account/forgot-password",

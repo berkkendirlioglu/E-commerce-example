@@ -1,111 +1,186 @@
 import { FormEvent, useEffect, useState } from "react";
 import styles from "./style.module.scss";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { AccountSettingsType, DeliveryType, navBarStore } from "../index.ts";
-import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { navBarStore } from "../index.ts";
 import { NavLink } from "react-router-dom";
-import { UpdateMyProfile } from "../../services/collection/auth.ts";
+import {
+  CreateNewAddress,
+  DeleteMyAddress,
+  EditMyAddress,
+  GetAllMyAddress,
+  GetMyAllOrder,
+  GetMyOrderDetails,
+  UpdateMyProfile,
+} from "../../services/collection/auth.ts";
 import { UpdateProfileType } from "../../types/AccountType.ts";
+import {
+  RegionType,
+  CountriesType,
+  SubRegionType,
+  AllAddressType,
+} from "../../types/AddressType.ts";
+import axios from "axios";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { AddressPayloadType } from "../../types/AddressType.ts";
+import { AllOrderTypes, OrderDetailsType } from "../../types/OrderTypes.ts";
+import { getAccessToken } from "../../services/storage.ts";
 
 const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
+const access_token = getAccessToken();
 
 function MyAccount() {
+  if(!access_token){
+    throw new Error("Access token is invalid");
+  }
+
   const [activeSection, setactiveSection] = useState<
     "accountInfo" | "delivery" | "address"
   >("accountInfo");
-  const [isAddress, setisAddress] = useState<boolean>();
-  const [address, setAddress] = useState<AccountSettingsType[]>([]);
-  const [Deliveries, setDeliveries] = useState<DeliveryType[] | undefined>(
-    () => {
-      const allDeliveries = localStorage.getItem("completeDelivery");
-      return allDeliveries ? JSON.parse(allDeliveries) : undefined;
-    }
-  );
-  const [deliveriesDetail, setdeliveriesDetail] = useState<DeliveryType[]>();
-  const [DeliveryId, setDeliveryId] = useState<string>();
-  const { register, handleSubmit } = useForm<AccountSettingsType>();
+
+  const { register, control, handleSubmit } = useForm<AddressPayloadType>();
   const { profileDetail } = navBarStore();
+  const [Countries, setCountries] = useState<CountriesType>();
+  const [Region, setRegion] = useState<RegionType>();
+  const [subRegion, setsubRegion] = useState<SubRegionType>();
+  const [address, setAddress] = useState<AllAddressType>();
+  const [addressId, setaddressId] = useState<string>("");
+  const [selectedCountry, setselectedCountry] = useState<string | null>();
+  const [selectedRegion, setselectedRegion] = useState<string | null>();
+  const [selectedSubRegion, setselectedSubRegion] = useState<string | null>();
+  const [isAddress, setisAddress] = useState<boolean>();
+  const [handleEditAddress, setHandleEditAddress] = useState<boolean>();
+  const [myOrders, setMyOrders] = useState<AllOrderTypes>();
+  const [orderId, setOrderId] = useState<string>();
+  const [orderDetails, setOrderDetails] = useState<OrderDetailsType>();
 
   useEffect(() => {
-    setDeliveries(() => {
-      const arrayDeliveries = localStorage.getItem("completeDelivery");
-      return arrayDeliveries ? JSON.parse(arrayDeliveries) : [];
-    });
+    const response = axios
+      .get(`${BASE_URL}/api/v1/world/countries?limit=252`)
+      .then((response) => {
+        setCountries(response.data);
+      });
+    if (!response) {
+      throw new Error("Countries can't loading!");
+    }
+
+    const allMyAddress = async () => {
+      const response = await GetAllMyAddress();
+
+      setAddress(response);
+      setisAddress(response.data.count > 0 ? true : false);
+    };
+    allMyAddress();
+  }, [activeSection === "address"]);
+
+  useEffect(() => {
+    if (selectedCountry === undefined) {
+      return;
+    }
+
+    const response = axios
+      .get(
+        `${BASE_URL}/api/v1/world/region?limit=999&offset=0&country-name=${selectedCountry}`
+      )
+      .then((response) => {
+        setRegion(response.data);
+      });
+
+    if (!response) {
+      throw new Error("Region can't loading!");
+    }
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    if (selectedRegion === undefined) {
+      return;
+    }
+
+    const response = axios
+      .get(
+        `${BASE_URL}/api/v1/world/subregion?limit=999&offset=0&region-name=${selectedRegion}`
+      )
+      .then((response) => {
+        setsubRegion(response.data);
+      });
+
+    if (!response && !subRegion) {
+      throw new Error("Subregion can't loading!");
+    }
+  }, [selectedRegion]);
+
+  useEffect(() => {
+    const getAllMyOrders = async () => {
+      const response = await GetMyAllOrder();
+
+      if (response.status === "success") {
+        setMyOrders(response);
+      } else {
+        alert("Siparişler getirilirken bir hata meydana geldi.");
+      }
+    };
+    getAllMyOrders();
   }, []);
 
-  const UpdateProfileSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (orderId === undefined) {
+      setOrderDetails(undefined);
+      return;
+    }
+    const getOrderDetail = async () => {
+      const response = await GetMyOrderDetails(orderId!);
 
+      if (response.status === "success") {
+        setOrderDetails(response);
+      } else {
+        alert("Sipariş detayları getirilirken bir hata meydana geldi.");
+      }
+    };
+    getOrderDetail();
+  }, [orderId]);
+
+  const updateProfileSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     const formEl = e.target as HTMLFormElement;
     const formData = new FormData(formEl);
     const data = Object.fromEntries(formData) as unknown as UpdateProfileType;
-    console.log(data);
+    const modifiyedData = {
+      ...data,
+      phone_number: data.phone_number.replace(/\s+/g, ""),
+    };
 
-    await UpdateMyProfile(data);
+    await UpdateMyProfile(modifiyedData);
 
     window.location.reload();
   };
 
-  const addressSubmit: SubmitHandler<AccountSettingsType> = (data) => {
-    const storedAddress = localStorage.getItem("address");
-    const addressArray = storedAddress ? JSON.parse(storedAddress) : [];
-    const updatedAddressArray = [...addressArray, data];
-
-    localStorage.setItem("address", JSON.stringify(updatedAddressArray));
-
-    setAddress(updatedAddressArray);
-    setisAddress(updatedAddressArray.length > 0);
+  const addressSubmit: SubmitHandler<AddressPayloadType> = async (data) => {
+    await CreateNewAddress(data);
+    setisAddress(true);
+    const renewedAddress = await GetAllMyAddress();
+    setAddress(renewedAddress);
   };
 
-  const handleDeleteAddress = (addressToDelete: string) => {
-    const updatedAddressArray = address.filter(
-      (address) => address.address !== addressToDelete
-    );
-
-    localStorage.setItem("address", JSON.stringify(updatedAddressArray));
-
-    setAddress(updatedAddressArray);
-    setisAddress(updatedAddressArray.length > 0);
+  const deleteMyAddress = async (addressId: string) => {
+    await DeleteMyAddress(addressId);
+    const renewedAddress = await GetAllMyAddress();
+    setAddress(renewedAddress);
+    setisAddress(renewedAddress.data.count <= 0 ? false : true);
   };
 
-  useEffect(() => {
-    const storedAddress = localStorage.getItem("address");
-    const addressArray = storedAddress ? JSON.parse(storedAddress) : [];
-    setAddress(addressArray);
-    setisAddress(addressArray.length > 0);
-  }, [
-    window.addEventListener("storage", (event) => {
-      event;
-    }),
-  ]);
+  const editMyAddress = async (data: AddressPayloadType) => {
+    const response = await EditMyAddress({ data, addressId });
+    if (response.status === "success") {
+      setHandleEditAddress(false);
+      const renewedAddress = await GetAllMyAddress();
+      setAddress(renewedAddress);
+    } else {
+      alert("hatalı işlemler mevcut!");
+    }
+  };
 
-  useEffect(() => {
-    const filteredDelivery = Deliveries?.filter((delivery) => {
-      return delivery.deliveryNumber === DeliveryId;
-    });
-    setdeliveriesDetail(filteredDelivery);
-  }, [DeliveryId]);
-
-  const basketUndiscountPrice = deliveriesDetail?.[0]?.products?.reduce(
-    (accumulator, item) => {
-      const totalPrice = item.price?.total_price;
-      const count = item.count ?? 1;
-      return accumulator + count * totalPrice;
-    },
-    0
-  );
-
-  const basketTotalPrice = deliveriesDetail?.[0]?.products?.reduce(
-    (accumulator, item) => {
-      const discountedPrice = item.price?.discounted_price;
-      const totalPrice = item.price?.total_price;
-      const count = item.count ?? 1;
-      return discountedPrice
-        ? accumulator + count * discountedPrice
-        : accumulator + count * (totalPrice ?? 0);
-    },
-    0
+  const filteredOrderDate = myOrders?.data.filter(
+    (date) => date.order_no === orderId
   );
 
   return (
@@ -154,7 +229,7 @@ function MyAccount() {
               </div>
 
               <form
-                onSubmit={UpdateProfileSubmit}
+                onSubmit={updateProfileSubmit}
                 className={`${styles["account-info-form"]}`}
                 action="#"
               >
@@ -165,6 +240,7 @@ function MyAccount() {
                   name="first_name"
                   type="text"
                   id={`${styles["firstName"]}`}
+                  autoFocus
                 />
 
                 <label className={`${styles["lastName"]}`} htmlFor="lastName">
@@ -179,23 +255,44 @@ function MyAccount() {
                 <label className={`${styles["phone"]}`} htmlFor="phone">
                   Telefon
                 </label>
-                {/* <PhoneInput
+
+                <Controller
                   name="phone_number"
-                  className={`${styles["phone-input"]}`}
-                  defaultCountry="TR"
-                  onChange={() => ""}
-                  maxLength={13}
-                /> */}
-                <input
-                  name="phone_number"
-                  className={`${styles["phone-input"]}`}
-                  type="text"
+                  control={control}
+                  defaultValue=""
+                  rules={{ required: "Telefon numarası zorunludur." }}
+                  render={({
+                    field: { onChange, value },
+                    fieldState: { error },
+                  }) => (
+                    <>
+                      <PhoneInput
+                        containerClass={`${styles["phone-input-container"]}`}
+                        inputClass={`${styles["phone-input"]}`}
+                        country={"tr"} // Varsayılan ülke: Türkiye
+                        value={value}
+                        onChange={(phone) => onChange(`+${phone}`)}
+                        inputProps={{
+                          name: "phone_number",
+                          required: true,
+                        }}
+                      />
+                      {error && <p style={{ color: "red" }}>{error.message}</p>}
+                    </>
+                  )}
                 />
 
                 <label className={`${styles["email"]}`} htmlFor="email">
                   E-Posta
                 </label>
-                <input type="email" id={`${styles["email"]}`} disabled value={profileDetail?.data.email ? profileDetail.data.email : ""}/>
+                <input
+                  type="email"
+                  id={`${styles["email"]}`}
+                  disabled
+                  value={
+                    profileDetail?.data.email
+                  }
+                />
 
                 <div className={`${styles["info-button-wrapper"]}`}>
                   <button className={`${styles["info-button"]}`}>Kaydet</button>
@@ -205,222 +302,217 @@ function MyAccount() {
           )}
           {activeSection === "delivery" && (
             <>
-              {Deliveries !== undefined ? (
+              {myOrders?.data.length! > 0 ? (
                 <>
-                  {DeliveryId ? (
-                    <>
-                      {deliveriesDetail?.map((delivery, index) => (
-                        <div
-                          key={`delivery-detail-${index}`}
-                          className={`${styles["delivery-detail-container"]}`}
-                        >
-                          <button
-                            onClick={() => setDeliveryId("")}
-                            className={`${styles["delivery-back-button"]}`}
-                          >
-                            <i className="bi bi-arrow-left"></i>&nbsp;Geri
-                          </button>
+                  {orderId ? (
+                    <div className={`${styles["delivery-detail-container"]}`}>
+                      <button
+                        onClick={() => setOrderId(undefined)}
+                        className={`${styles["delivery-back-button"]}`}
+                      >
+                        <i className="bi bi-arrow-left"></i>&nbsp;Geri
+                      </button>
 
-                          <div className={`${styles["detail-title-wrapper"]}`}>
-                            <span className={`${styles["delivery-status"]}`}>
-                              Sipariş Teslim Edildi
-                            </span>
-                            <span>
-                              {delivery.deliveryDate} Tarihinde Teslim Edildi -{" "}
-                              <span>
-                                {delivery.deliveryNumber} numaralı sipariş
-                              </span>
+                      <div className={`${styles["detail-title-wrapper"]}`}>
+                        <span className={`${styles["delivery-status"]}`}>
+                          {orderDetails?.data.order_status === "in_cargo"
+                            ? "Kargoya Verildi."
+                            : orderDetails?.data.order_status === "delivered"
+                            ? "Teslim Edildi"
+                            : "Siparişiniz Hazırlanıyor"}
+                        </span>
+                        <span>
+                           <strong>{new Date(filteredOrderDate?.[0]?.created_at!).toLocaleDateString("tr-TR", {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}</strong> Tarihinde Sipariş Verildi.
+                          <span>
+                            &nbsp;<strong>{orderDetails?.data.order_no}</strong>{" "}
+                            numaralı sipariş
+                          </span>
+                        </span>
+                      </div>
+
+                      <div className={`${styles["delivery-detail-content"]}`}>
+                        <div className={`${styles["product-detail-wrapper"]}`}>
+                          {orderDetails?.data.shopping_cart!.items.map(
+                            (product, index) => (
+                              <div
+                                key={`delivery-product-${index}`}
+                                className={`${styles["product-box"]}`}
+                              >
+                                <div
+                                  className={`${styles["product-img-wrapper"]}`}
+                                >
+                                  <img
+                                    src={
+                                      BASE_URL +
+                                      product.product_variant_detail.photo_src
+                                    }
+                                    alt=""
+                                  />
+                                </div>
+                                <div
+                                  className={`${styles["product-name-detail"]}`}
+                                >
+                                  <p className={`${styles["product-name"]}`}>
+                                    {product.product} x {product.pieces}
+                                  </p>
+                                  <p className={`${styles["product-price"]}`}>
+                                    {product.total_price}
+                                    &nbsp;TL
+                                  </p>
+                                  <p className={`${styles["product-size"]}`}>
+                                    Boyut:{" "}
+                                    {!product.product_variant_detail.size.gram
+                                      ? `${product.product_variant_detail.size.pieces} Kutu`
+                                      : `${product.product_variant_detail.size.gram}G`}
+                                  </p>
+                                </div>
+                              </div>
+                            )
+                          )}
+                          {orderDetails?.data.shipment_tracking_number && (
+                            <div
+                              className={`${styles["product-shipping-detail"]}`}
+                            >
+                              <p>
+                                Kargo Takip Numarası:&nbsp;
+                                <strong>
+                                  {orderDetails?.data.shipment_tracking_number}
+                                </strong>{" "}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        <div
+                          className={`${styles["delivery-information-wrapper"]}`}
+                        >
+                          <div
+                            className={`${styles["delivery-address-wrapper"]}`}
+                          >
+                            <h5 className={`${styles["address-title"]}`}>
+                              Adres
+                            </h5>
+                            {/* <span className={`${styles["user-fullName"]}`}>
+                              {orderDetails?.data.address +
+                                " " +
+                                deliveriesDetail[0].address!.lastName}
+                            </span> */}
+                            <span className={`${styles["full-address"]}`}>
+                              {orderDetails?.data.address.full_address}/{" "}
+                              {orderDetails?.data.address.subregion}/{" "}
+                              {orderDetails?.data.address.region}/{" "}
+                              {orderDetails?.data.address.country}
                             </span>
                           </div>
-
-                          <div
-                            className={`${styles["delivery-detail-content"]}`}
-                          >
-                            <div
-                              className={`${styles["product-detail-wrapper"]}`}
-                            >
-                              {delivery.products?.map((product, index) => (
-                                <div
-                                  key={`delivery-product-${index}`}
-                                  className={`${styles["product-box"]}`}
-                                >
-                                  <div
-                                    className={`${styles["product-img-wrapper"]}`}
-                                  >
-                                    <img
-                                      src={BASE_URL + product.photo_src}
-                                      alt=""
-                                    />
-                                  </div>
-                                  <div
-                                    className={`${styles["product-name-detail"]}`}
-                                  >
-                                    <p className={`${styles["product-name"]}`}>
-                                      {product.name} x {product.count}
-                                    </p>
-                                    <p className={`${styles["product-price"]}`}>
-                                      {product.price.discounted_price
-                                        ? product.price.discounted_price
-                                        : product.price.total_price}
-                                      &nbsp;TL
-                                    </p>
-                                    <p className={`${styles["product-size"]}`}>
-                                      Boyut:{" "}
-                                      {!product.size.gram
-                                        ? `${product.size.pieces} Kutu`
-                                        : `${product.size.gram}G`}
-                                    </p>
-                                  </div>
-                                </div>
-                              ))}
-                              <div
-                                className={`${styles["product-shipping-detail"]}`}
-                              >
-                                <p>
-                                  <strong>
-                                    {deliveriesDetail[0].shipping}
-                                  </strong>{" "}
-                                  Takip Numarası: DHF255465465458
-                                </p>
-                              </div>
+                          <div className={`${styles["credit-card-wrapper"]}`}>
+                            <span className={`${styles["credit-card-items"]}`}>
+                              {orderDetails?.data.payment_detail.card_type} -{" "}
+                              {orderDetails?.data.payment_detail.final_price.toLocaleString(
+                                "tr-TR"
+                              )}
+                              &nbsp;TL
+                            </span>
+                            <span className={`${styles["credit-card-items"]}`}>
+                              {orderDetails?.data.payment_detail.card_digits
+                                ?.replace(/.(?=.{2})/g, "*")
+                                .match(/.{1,4}/g)
+                                ?.join(" ")}
+                            </span>
+                          </div>
+                          <div className={`${styles["price-details-wrapper"]}`}>
+                            <h6 className={`${styles["price-detail-title"]}`}>
+                              Özet
+                            </h6>
+                            <div className={`${styles["price-details"]}`}>
+                              <span>Ara Toplam</span>
+                              <span>
+                                {orderDetails?.data.shopping_cart.total_price.toLocaleString(
+                                  "tr-TR"
+                                )}{" "}
+                                TL
+                              </span>
                             </div>
-
-                            <div
-                              className={`${styles["delivery-information-wrapper"]}`}
-                            >
-                              <div
-                                className={`${styles["delivery-address-wrapper"]}`}
-                              >
-                                <h5 className={`${styles["address-title"]}`}>
-                                  Adres
-                                </h5>
-                                <span className={`${styles["user-fullName"]}`}>
-                                  {deliveriesDetail[0].address!.firstName +
-                                    " " +
-                                    deliveriesDetail[0].address!.lastName}
-                                </span>
-                                <span className={`${styles["full-address"]}`}>
-                                  {deliveriesDetail[0].address!.address}/{" "}
-                                  {deliveriesDetail[0].address!.state}/{" "}
-                                  {deliveriesDetail[0].address!.city}
-                                </span>
-                              </div>
-                              <div
-                                className={`${styles["credit-card-wrapper"]}`}
-                              >
-                                <span
-                                  className={`${styles["credit-card-items"]}`}
-                                >
-                                  Kredi Kartı -{" "}
-                                  {basketTotalPrice?.toLocaleString("tr-TR")}
-                                  &nbsp;TL
-                                </span>
-                                <span
-                                  className={`${styles["credit-card-items"]}`}
-                                >
-                                  {deliveriesDetail![0].payment?.cardNumber
-                                    ?.replace(/.(?=.{2})/g, "*")
-                                    .match(/.{1,4}/g)
-                                    ?.join(" ")}
-                                </span>
-                              </div>
-                              <div
-                                className={`${styles["price-details-wrapper"]}`}
-                              >
-                                <h6
-                                  className={`${styles["price-detail-title"]}`}
-                                >
-                                  Özet
-                                </h6>
-                                <div className={`${styles["price-details"]}`}>
-                                  <span>Ara Toplam</span>
-                                  <span>
-                                    {basketUndiscountPrice?.toLocaleString(
-                                      "tr-TR"
-                                    )}{" "}
-                                    TL
-                                  </span>
-                                </div>
-                                <div className={`${styles["price-details"]}`}>
-                                  <span>Kargo</span>
-                                  <span>0 TL</span>
-                                </div>
-                                <div className={`${styles["price-details"]}`}>
-                                  <span>Toplam Vergi</span>
-                                  <span>
-                                    {(basketTotalPrice! * 0.18).toFixed(2)} TL
-                                  </span>
-                                </div>
-                                <div className={`${styles["price-details"]}`}>
-                                  <span>
-                                    Yüzde&nbsp;
-                                    {[
-                                      ...new Set(
-                                        deliveriesDetail[0].products?.map(
-                                          (product) =>
-                                            product.price?.discount_percentage
-                                        )
-                                      ),
-                                    ]
-                                      .sort((a, b) => a! - b!)
-                                      .join(", ") ?? "0"}{" "}
-                                    indirim!
-                                  </span>
-                                  <span>
-                                    {deliveriesDetail[0].products
-                                      ?.reduce((accumulator, product) => {
-                                        if (product.price.discounted_price) {
-                                          return (
-                                            accumulator +
-                                            product.price.discounted_price * 0.1
-                                          );
-                                        }
-                                        return accumulator;
-                                      }, 0)
-                                      .toLocaleString("tr-TR")}{" "}
-                                    TL
-                                  </span>
-                                </div>
-                                <div className={`${styles["price-details"]}`}>
-                                  <span>Toplam</span>
-                                  <span>
-                                    {basketTotalPrice?.toLocaleString("tr-TR")}{" "}
-                                    TL
-                                  </span>
-                                </div>
-                              </div>
-                              <div className={`${styles["help-wrapper"]}`}>
-                                <h5 className={`${styles["help-title"]}`}>
-                                  Yardıma mı ihtiyacın var?
-                                </h5>
-                                <NavLink
-                                  className={`${styles["help-link"]}`}
-                                  to={"/sss"}
-                                >
-                                  Sıkça Sorulan Sorular
-                                </NavLink>
-                                <NavLink
-                                  className={`${styles["help-link"]}`}
-                                  to={"/"}
-                                >
-                                  Satış Sözleşmesi
-                                </NavLink>
-                              </div>
+                            <div className={`${styles["price-details"]}`}>
+                              <span>Kargo</span>
+                              <span>
+                                {orderDetails?.data.payment_detail.shipment_fee.toLocaleString(
+                                  "tr-TR"
+                                )}{" "}
+                                TL
+                              </span>
                             </div>
+                            <div className={`${styles["price-details"]}`}>
+                              <span>Toplam Vergi</span>
+                              <span>
+                                {(
+                                  orderDetails?.data.payment_detail
+                                    .final_price! * 0.18
+                                ).toFixed(2)}{" "}
+                                TL
+                              </span>
+                            </div>
+                            <div className={`${styles["price-details"]}`}>
+                              <span>
+                                Yüzde&nbsp;
+                                {
+                                  orderDetails?.data.payment_detail
+                                    .discount_ratio
+                                }
+                                &nbsp;indirim!
+                              </span>
+                              <span>
+                                {orderDetails?.data.payment_detail.discount_amount.toLocaleString(
+                                  "tr-TR"
+                                )}{" "}
+                                TL
+                              </span>
+                            </div>
+                            <div className={`${styles["price-details"]}`}>
+                              <span>Toplam</span>
+                              <span>
+                                {orderDetails?.data.payment_detail.final_price?.toLocaleString(
+                                  "tr-TR"
+                                )}{" "}
+                                TL
+                              </span>
+                            </div>
+                          </div>
+                          <div className={`${styles["help-wrapper"]}`}>
+                            <h5 className={`${styles["help-title"]}`}>
+                              Yardıma mı ihtiyacın var?
+                            </h5>
+                            <NavLink
+                              className={`${styles["help-link"]}`}
+                              to={"/sss"}
+                            >
+                              Sıkça Sorulan Sorular
+                            </NavLink>
+                            <NavLink
+                              className={`${styles["help-link"]}`}
+                              to={"/"}
+                            >
+                              Satış Sözleşmesi
+                            </NavLink>
                           </div>
                         </div>
-                      ))}
-                    </>
+                      </div>
+                    </div>
                   ) : (
                     <div className={`${styles["delivery-info-container"]}`}>
                       <div className={`${styles["delivery-title-wrapper"]}`}>
                         <h5 className={`${styles["delivery-title"]}`}>
-                          Siparişler&nbsp;({Deliveries!.length})
+                          Siparişler&nbsp;({myOrders?.data.length})
                         </h5>
                       </div>
 
                       <div className={`${styles["delivery-content"]}`}>
-                        {Deliveries?.map((delivery, index) => (
+                        {myOrders?.data?.map((delivery, index) => (
                           <div
                             key={`delivery-${index}`}
                             className={`${styles["delivery-box"]}`}
@@ -431,10 +523,13 @@ function MyAccount() {
                               >
                                 <img
                                   src={
-                                    BASE_URL + delivery.products![0].photo_src
+                                    delivery.cart_detail.length > 0
+                                      ? BASE_URL +
+                                        delivery.cart_detail[0].photo_src
+                                      : `https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png`
                                   }
-                                  alt={delivery.products![0].name}
-                                  title={delivery.products![0].name}
+                                  alt={"order alt"}
+                                  title={"order title"}
                                 />
                               </div>
 
@@ -442,23 +537,35 @@ function MyAccount() {
                                 className={`${styles["delivery-detail-wrapper"]}`}
                               >
                                 <h6 className={`${styles["delivered-text"]}`}>
-                                  Teslim Edildi
+                                  {delivery.order_status === "in_cargo"
+                                    ? "Kargoya Verildi."
+                                    : delivery.order_status === "delivered"
+                                    ? "Teslim Edildi"
+                                    : "Siparişiniz Hazırlanıyor"}
                                 </h6>
                                 <span
                                   className={`${styles["delivery-products-name"]}`}
                                 >
-                                  {delivery.products
+                                  {delivery.cart_detail
                                     ?.map((productName) => productName.name)
                                     .join(" - ")}
                                 </span>
                                 <span className={`${styles["delivered-date"]}`}>
-                                  {delivery.deliveryDate} Tarihinde Sipariş
-                                  Verildi.
+                                  {new Date(
+                                    delivery.created_at
+                                  ).toLocaleDateString("tr-TR", {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}{" "}
+                                  Tarihinde Sipariş Verildi.
                                 </span>
                                 <span
                                   className={`${styles["delivery-number"]}`}
                                 >
-                                  {delivery.deliveryNumber}{" "}
+                                  {delivery.order_no}{" "}
                                   <span
                                     className={`${styles["delivery-number-text"]}`}
                                   >
@@ -472,9 +579,7 @@ function MyAccount() {
                               className={`${styles["detail-button-wrapper"]}`}
                             >
                               <button
-                                onClick={() =>
-                                  setDeliveryId(delivery.deliveryNumber)
-                                }
+                                onClick={() => setOrderId(delivery.order_no)}
                                 className={`${styles["delivery-detail-button"]}`}
                               >
                                 Detayı Görüntüle
@@ -511,12 +616,14 @@ function MyAccount() {
                     </h5>
                   </div>
 
-                  <div className={`${styles["address-info-wrapper"]}`}>
-                    <span className={`${styles["address-info"]}`}>
-                      Kayıtlı bir adresiniz yok. Lütfen aşağıdaki kısımdan adres
-                      oluşturunuz.
-                    </span>
-                  </div>
+                  {address?.data.count! <= 0 && (
+                    <div className={`${styles["address-info-wrapper"]}`}>
+                      <span className={`${styles["address-info"]}`}>
+                        Kayıtlı bir adresiniz yok. Lütfen aşağıdaki kısımdan
+                        adres oluşturunuz.
+                      </span>
+                    </div>
+                  )}
 
                   <form
                     onSubmit={handleSubmit(addressSubmit)}
@@ -558,44 +665,146 @@ function MyAccount() {
                       *Adres
                     </label>
                     <input
-                      {...register("address")}
+                      {...register("full_address")}
                       id={`${styles["address-input"]}`}
                       type="text"
                       required
                     />
 
                     <label className={`${styles["address-city-label"]}`}>
-                      *Şehir
+                      *Ülke
                     </label>
-                    <input
-                      {...register("city")}
+                    <select
+                      {...register("country_id", {
+                        setValueAs: (value) => parseInt(value, 10),
+                      })}
                       id={`${styles["address-city-input"]}`}
-                      type="text"
                       required
-                    />
+                      onChange={(e) => {
+                        const selectedCountryId = Countries?.data.results.find(
+                          (country) => country.id === Number(e.target.value)
+                        );
+
+                        setselectedCountry(
+                          selectedCountryId ? selectedCountryId.name : null
+                        );
+                      }}
+                      defaultValue={"Ülke"}
+                    >
+                      <option disabled defaultChecked value="Ülke">
+                        Ülke
+                      </option>
+                      {Countries?.data.results.map((country) => (
+                        <option key={country.id} value={country.id}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </select>
 
                     <label className={`${styles["address-state-label"]}`}>
-                      *İlçe
+                      *Şehir
                     </label>
-                    <input
-                      {...register("state")}
+                    <select
+                      {...register("region_id", {
+                        setValueAs: (value) => parseInt(value, 10),
+                      })}
                       id={`${styles["address-state-input"]}`}
-                      type="text"
                       required
-                    />
+                      defaultValue={"Şehir"}
+                      onChange={(e) => {
+                        const selectedRegionId = Region?.data.results.find(
+                          (region) => region.id === Number(e.target.value)
+                        );
+
+                        setselectedRegion(
+                          selectedRegionId ? selectedRegionId.name : null
+                        );
+                      }}
+                    >
+                      <option defaultChecked disabled value="Şehir">
+                        Şehir
+                      </option>
+                      {Region?.data.results.map((region) => (
+                        <option key={region.id} value={region.id}>
+                          {region.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    <label className={`${styles["address-subregion-label"]}`}>
+                      {!selectedSubRegion && "*İlçe"}
+                    </label>
+                    <select
+                      {...register("subregion_id", {
+                        setValueAs: (value) => parseInt(value, 10),
+                      })}
+                      onChange={(e) => {
+                        const selectedSubregionId =
+                          subRegion?.data.results.find(
+                            (subregion) =>
+                              subregion.id === Number(e.target.value)
+                          );
+
+                        setselectedSubRegion(
+                          selectedSubregionId ? selectedSubregionId.name : null
+                        );
+                      }}
+                      id={`${styles["address-subregion-input"]}`}
+                      required
+                      defaultValue={"İlçe"}
+                    >
+                      <option value="İlçe" defaultChecked disabled>
+                        İlçe
+                      </option>
+                      {subRegion?.data.results.map((region) => (
+                        <option key={region.id} value={region.id}>
+                          {region.name}
+                        </option>
+                      ))}
+                    </select>
 
                     <label className={`${styles["address-phone-label"]}`}>
                       *Telefon
                     </label>
-                    <PhoneInput
-                      {...register("phone_number")}
-                      onChange={() => ""}
-                      className={`${styles["address-phone-input"]}`}
-                      defaultCountry="TR"
-                      maxLength={13}
+
+                    <Controller
+                      name="phone_number"
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: "Telefon numarası zorunludur." }}
+                      render={({
+                        field: { onChange, value },
+                        fieldState: { error },
+                      }) => (
+                        <>
+                          <PhoneInput
+                            containerClass={`${styles["address-phone-container"]}`}
+                            inputClass={`${styles["address-phone-input"]}`}
+                            country={"tr"} // Varsayılan ülke: Türkiye
+                            value={value}
+                            onChange={(phone) => onChange(`+${phone}`)}
+                            inputProps={{
+                              name: "phone_number",
+                              required: true,
+                              autoFocus: true,
+                            }}
+                          />
+                          {error && (
+                            <p style={{ color: "red" }}>{error.message}</p>
+                          )}
+                        </>
+                      )}
                     />
 
                     <div className={`${styles["address-button-wrapper"]}`}>
+                      {address?.data.count! > 0 && (
+                        <button
+                          onClick={() => setisAddress(true)}
+                          className={`${styles["address-cancel-button"]}`}
+                        >
+                          İptal
+                        </button>
+                      )}
                       <button
                         type="submit"
                         className={`${styles["address-submit-button"]}`}
@@ -606,54 +815,289 @@ function MyAccount() {
                   </form>
                 </div>
               ) : (
-                <div className={`${styles["with-address-container"]}`}>
-                  <div className={`${styles["with-address-title"]}`}>
-                    <h5 className={`${styles["address-count-title"]}`}>
-                      Adreslerim&nbsp;({address.length})
-                    </h5>
-                    <button
-                      onClick={() => setisAddress(false)}
-                      className={`${styles["new-address"]}`}
-                    >
-                      <i
-                        className={`${styles["new-address-icon"]} bi bi-plus-lg`}
-                      ></i>
-                      Yeni Adres Ekle
-                    </button>
+                <>
+                  <div className={`${styles["with-address-container"]}`}>
+                    <div className={`${styles["with-address-title"]}`}>
+                      <h5 className={`${styles["address-count-title"]}`}>
+                        Adreslerim&nbsp;({address?.data.results.length})
+                      </h5>
+                      <button
+                        onClick={() => setisAddress(false)}
+                        className={`${styles["new-address"]}`}
+                      >
+                        <i
+                          className={`${styles["new-address-icon"]} bi bi-plus-lg`}
+                        ></i>
+                        Yeni Adres Ekle
+                      </button>
+                    </div>
+
+                    <div className={`${styles["saved-address-wrapper"]}`}>
+                      {address?.data.results.map((a, index) => (
+                        <div key={index} className={`${styles["address-box"]}`}>
+                          <div className={`${styles["address-title"]}`}>
+                            {a.title}
+                          </div>
+
+                          <div className={`${styles["address"]}`}>
+                            {`${a.full_address}, ${a.subregion.name}, ${a.region.name}, ${a.country.name}`}
+                          </div>
+
+                          <div className={`${styles["delete-edit-wrapper"]}`}>
+                            <button
+                              onClick={() => deleteMyAddress(a.id)}
+                              className={`${styles["delete-button"]}`}
+                            >
+                              <i
+                                className={`${styles["delete-button-icon"]} bi bi-trash`}
+                              ></i>
+                              &nbsp;Sil
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setaddressId(a.id), setHandleEditAddress(true);
+                              }}
+                              className={`${styles["address-edit-button"]}`}
+                            >
+                              Adresi Düzenle
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-
-                  <div className={`${styles["saved-address-wrapper"]}`}>
-                    {address.map((a, index) => (
-                      <div key={index} className={`${styles["address-box"]}`}>
-                        <div className={`${styles["address-title"]}`}>
-                          {a.title}
-                        </div>
-
-                        <div className={`${styles["address"]}`}>
-                          {`${a.address},${a.state},${a.city}`}
-                        </div>
-
-                        <div className={`${styles["delete-edit-wrapper"]}`}>
-                          <button
-                            onClick={() => handleDeleteAddress(a.address)}
-                            className={`${styles["delete-button"]}`}
-                          >
-                            <i
-                              className={`${styles["delete-button-icon"]} bi bi-trash`}
-                            ></i>
-                            &nbsp;Sil
-                          </button>
-
-                          <button
-                            className={`${styles["address-edit-button"]}`}
-                          >
+                  {handleEditAddress && (
+                    <div className={`${styles["modal-container"]}`}>
+                      <div className={`${styles["modal-wrapper"]}`}>
+                        <div className={`${styles["modal-title-wrapper"]}`}>
+                          <h5 className={`${styles["modal-title"]}`}>
                             Adresi Düzenle
+                          </h5>
+                          <button
+                            className={`${styles["modal-close-button"]}`}
+                            onClick={() => setHandleEditAddress(false)}
+                          >
+                            <i className="bi bi-x-lg"></i>
                           </button>
+                        </div>
+
+                        <div className={`${styles["modal-form-wrapper"]}`}>
+                          <form
+                            onSubmit={handleSubmit(editMyAddress)}
+                            action="#"
+                            className={`${styles["modal-form"]}`}
+                          >
+                            <label
+                              className={`${styles["address-title-label"]}`}
+                            >
+                              *Adres Başlığı
+                            </label>
+                            <input
+                              {...register("title")}
+                              id={`${styles["address-title-input"]}`}
+                              type="text"
+                              placeholder="ev,iş vb..."
+                              required
+                            />
+
+                            <label
+                              className={`${styles["address-firstName-label"]}`}
+                            >
+                              *Ad
+                            </label>
+                            <input
+                              {...register("first_name")}
+                              id={`${styles["address-firstName-input"]}`}
+                              type="text"
+                              required
+                            />
+
+                            <label
+                              className={`${styles["address-lastName-label"]}`}
+                            >
+                              *Soyad
+                            </label>
+                            <input
+                              {...register("last_name")}
+                              id={`${styles["address-lastName-input"]}`}
+                              type="text"
+                              required
+                            />
+
+                            <label className={`${styles["address-label"]}`}>
+                              *Adres
+                            </label>
+                            <input
+                              {...register("full_address")}
+                              id={`${styles["address-input"]}`}
+                              type="text"
+                              required
+                            />
+
+                            <label
+                              className={`${styles["address-city-label"]}`}
+                            >
+                              *Ülke
+                            </label>
+                            <select
+                              {...register("country_id", {
+                                setValueAs: (value) => parseInt(value, 10),
+                              })}
+                              id={`${styles["address-city-input"]}`}
+                              required
+                              onChange={(e) => {
+                                const selectedCountryId =
+                                  Countries?.data.results.find(
+                                    (country) =>
+                                      country.id === Number(e.target.value)
+                                  );
+
+                                setselectedCountry(
+                                  selectedCountryId
+                                    ? selectedCountryId.name
+                                    : null
+                                );
+                              }}
+                              defaultValue={"Ülke"}
+                            >
+                              <option disabled defaultChecked value="Ülke">
+                                Ülke
+                              </option>
+                              {Countries?.data.results.map((country) => (
+                                <option key={country.id} value={country.id}>
+                                  {country.name}
+                                </option>
+                              ))}
+                            </select>
+
+                            <label
+                              className={`${styles["address-state-label"]}`}
+                            >
+                              *Şehir
+                            </label>
+                            <select
+                              {...register("region_id", {
+                                setValueAs: (value) => parseInt(value, 10),
+                              })}
+                              id={`${styles["address-state-input"]}`}
+                              required
+                              defaultValue={"Şehir"}
+                              onChange={(e) => {
+                                const selectedRegionId =
+                                  Region?.data.results.find(
+                                    (region) =>
+                                      region.id === Number(e.target.value)
+                                  );
+
+                                setselectedRegion(
+                                  selectedRegionId
+                                    ? selectedRegionId.name
+                                    : null
+                                );
+                              }}
+                            >
+                              <option defaultChecked disabled value="Şehir">
+                                Şehir
+                              </option>
+                              {Region?.data.results.map((region) => (
+                                <option key={region.id} value={region.id}>
+                                  {region.name}
+                                </option>
+                              ))}
+                            </select>
+
+                            <label
+                              className={`${styles["address-subregion-label"]}`}
+                            >
+                              *İlçe
+                            </label>
+                            <select
+                              {...register("subregion_id", {
+                                setValueAs: (value) => parseInt(value, 10),
+                              })}
+                              onChange={(e) => {
+                                const selectedSubregionId =
+                                  subRegion?.data.results.find(
+                                    (subregion) =>
+                                      subregion.id === Number(e.target.value)
+                                  );
+
+                                setselectedSubRegion(
+                                  selectedSubregionId
+                                    ? selectedSubregionId.name
+                                    : null
+                                );
+                              }}
+                              id={`${styles["address-subregion-input"]}`}
+                              required
+                              defaultValue={"İlçe"}
+                            >
+                              <option value="İlçe" defaultChecked disabled>
+                                İlçe
+                              </option>
+                              {subRegion?.data.results.map((region) => (
+                                <option key={region.id} value={region.id}>
+                                  {region.name}
+                                </option>
+                              ))}
+                            </select>
+
+                            <label
+                              className={`${styles["address-phone-label"]}`}
+                            >
+                              *Telefon
+                            </label>
+
+                            <Controller
+                              name="phone_number"
+                              control={control}
+                              defaultValue=""
+                              rules={{
+                                required: "Telefon numarası zorunludur.",
+                              }}
+                              render={({
+                                field: { onChange, value },
+                                fieldState: { error },
+                              }) => (
+                                <>
+                                  <PhoneInput
+                                    containerClass={`${styles["address-phone-container"]}`}
+                                    inputClass={`${styles["address-phone-input"]}`}
+                                    country={"tr"} // Varsayılan ülke: Türkiye
+                                    value={value}
+                                    onChange={(phone) => onChange(`+${phone}`)}
+                                    inputProps={{
+                                      name: "phone_number",
+                                      required: true,
+                                      autoFocus: true,
+                                    }}
+                                  />
+                                  {error && (
+                                    <p style={{ color: "red" }}>
+                                      {error.message}
+                                    </p>
+                                  )}
+                                </>
+                              )}
+                            />
+
+                            <div
+                              className={`${styles["address-button-wrapper"]}`}
+                            >
+                              <button
+                                type="submit"
+                                className={`${styles["address-submit-button"]}`}
+                              >
+                                Kaydet
+                              </button>
+                            </div>
+                          </form>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

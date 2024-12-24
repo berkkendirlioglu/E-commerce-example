@@ -231,17 +231,14 @@
           .phone {
             order: 5;
           }
-          .phone-input {
+          .phone-input-container {
             order: 6;
-            border: 1px solid rgba(229, 229, 229, 1);
-            border-radius: 4px;
-            padding: 0.5rem;
-            input {
-              background: rgba(247, 247, 247, 1);
-              border: none;
-              padding: 0 0.5rem;
+            width: 100%;
+            .phone-input {
+              width: 100%;
+              padding-left: 3rem;
               &:focus {
-                outline: none;
+                box-shadow: none;
               }
             }
           }
@@ -267,7 +264,6 @@
           }
 
           .phone,
-          .phone-input,
           .email,
           #email,
           .info-button-wrapper {
@@ -275,7 +271,8 @@
           }
 
           #firstName,
-          #lastName {
+          #lastName,
+          .phone-input {
             background: rgba(247, 247, 247, 1);
             border: 1px solid rgba(229, 229, 229, 1);
             border-radius: 4px;
@@ -309,7 +306,7 @@
         }
         .delivery-content {
           display: flex;
-          flex-direction: column-reverse;
+          flex-direction: column;
           padding: 1rem 0;
           gap: 1rem;
           .delivery-box {
@@ -400,8 +397,12 @@
             .address-label,
             #address-input,
             .address-phone-label,
-            .address-phone-input {
+            .address-phone-input,
+            .address-phone-container,
+            .address-subregion-label,
+            #address-subregion-input {
               flex: 100%;
+              width: 100%;
             }
             .address-firstName-label,
             #address-firstName-input,
@@ -449,29 +450,33 @@
             #address-state-input {
               order: 12;
             }
-            .address-phone-label {
+            .address-subregion-label {
               order: 13;
             }
-            .address-phone-input {
+            #address-subregion-input {
               order: 14;
-              border: 1px solid rgba(229, 229, 229, 1);
-              padding: 0.5rem;
-              input {
-                background: rgba(247, 247, 247, 1);
-                border: none;
-                border-radius: 4px;
-                padding: 0 0.5rem;
+            }
+            .address-phone-label {
+              order: 15;
+            }
+            .address-phone-container {
+              order: 16;
+              .address-phone-input {
+                padding-left: 3rem;
                 &:focus {
-                  outline: none;
+                  box-shadow: none !important;
                 }
               }
             }
+
             #address-title-input,
             #address-firstName-input,
             #address-lastName-input,
             #address-input,
             #address-city-input,
-            #address-state-input {
+            #address-state-input,
+            #address-subregion-input,
+            .address-phone-input {
               background: rgba(247, 247, 247, 1);
               border: 1px solid rgba(229, 229, 229, 1);
               border-radius: 4px;
@@ -481,16 +486,26 @@
               }
             }
             .address-button-wrapper {
-              order: 15;
+              order: 17;
               width: 100%;
               display: flex;
               justify-content: end;
+              gap: 1rem;
               .address-submit-button {
                 margin: 1rem 0 0 0;
                 padding: 0.7rem 1rem;
                 font-size: 24px;
                 background: #000;
                 color: #fff;
+                border-radius: 5px;
+                border: none;
+              }
+              .address-cancel-button {
+                margin: 1rem 0 0 0;
+                padding: 0.7rem 1rem;
+                font-size: 24px;
+                background: transparent;
+                color: #000;
                 border-radius: 5px;
                 border: none;
               }
@@ -530,7 +545,7 @@
               gap: 4rem;
               flex-direction: column;
               justify-content: space-between;
-              flex: 0 0 400px;
+              flex: 0 0 330px;
               height: auto;
               padding: 1rem;
               border-radius: 4px;
@@ -548,6 +563,168 @@
                 }
                 .delete-button-icon {
                   font-size: 24px;
+                }
+              }
+            }
+          }
+        }
+        .modal-container {
+          position: fixed;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          background: rgba(0, 0, 0, 0.3);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 99999;
+          .modal-wrapper {
+            border-radius: 10px;
+            background: #fff;
+            width: 50%;
+            height: 70%;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            .modal-title-wrapper {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 0.5rem;
+              border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+              .modal-title {
+                font-weight: bold;
+              }
+              .modal-close-button {
+                padding: 0.3rem 0.6rem;
+                border: none;
+              }
+            }
+            .modal-form-wrapper {
+              padding: 0.5rem;
+              .modal-form {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+
+                .address-title-label,
+                #address-title-input,
+                .address-label,
+                #address-input,
+                .address-phone-label,
+                .address-phone-input,
+                .address-phone-container,
+                .address-subregion-label,
+                #address-subregion-input {
+                  flex: 100%;
+                  width: 100%;
+                }
+                .address-firstName-label,
+                #address-firstName-input,
+                .address-lastName-label,
+                #address-lastName-input,
+                .address-city-label,
+                #address-city-input,
+                .address-state-label,
+                #address-state-input {
+                  flex: 49%;
+                }
+                .address-title-label {
+                  order: 1;
+                }
+                #address-title-input {
+                  order: 2;
+                }
+                .address-firstName-label {
+                  order: 3;
+                }
+                .address-lastName-label {
+                  order: 4;
+                }
+                #address-firstName-input {
+                  order: 5;
+                }
+                #address-lastName-input {
+                  order: 6;
+                }
+                .address-label {
+                  order: 7;
+                }
+                #address-input {
+                  order: 8;
+                }
+                .address-city-label {
+                  order: 9;
+                }
+                .address-state-label {
+                  order: 10;
+                }
+                #address-city-input {
+                  order: 11;
+                }
+                #address-state-input {
+                  order: 12;
+                }
+                .address-subregion-label {
+                  order: 13;
+                }
+                #address-subregion-input {
+                  order: 14;
+                }
+                .address-phone-label {
+                  order: 15;
+                }
+                .address-phone-container {
+                  order: 16;
+                  .address-phone-input {
+                    padding-left: 3rem;
+                    &:focus {
+                      box-shadow: none !important;
+                    }
+                  }
+                }
+
+                #address-title-input,
+                #address-firstName-input,
+                #address-lastName-input,
+                #address-input,
+                #address-city-input,
+                #address-state-input,
+                #address-subregion-input,
+                .address-phone-input {
+                  background: rgba(247, 247, 247, 1);
+                  border: 1px solid rgba(229, 229, 229, 1);
+                  border-radius: 4px;
+                  padding: 0.5rem;
+                  &:focus {
+                    outline: none;
+                  }
+                }
+                .address-button-wrapper {
+                  order: 17;
+                  width: 100%;
+                  display: flex;
+                  justify-content: end;
+                  gap: 1rem;
+                  .address-submit-button {
+                    margin: 1rem 0 0 0;
+                    padding: 0.7rem 1rem;
+                    font-size: 24px;
+                    background: #000;
+                    color: #fff;
+                    border-radius: 5px;
+                    border: none;
+                  }
+                  .address-cancel-button {
+                    margin: 1rem 0 0 0;
+                    padding: 0.7rem 1rem;
+                    font-size: 24px;
+                    background: #ed5e68;
+                    color: #dddddd;
+                    border-radius: 5px;
+                    border: none;
+                  }
                 }
               }
             }
@@ -622,7 +799,7 @@
             .phone {
               order: 5 !important;
             }
-            .phone-input {
+            .phone-input-container {
               order: 6 !important;
             }
             .email {
@@ -697,9 +874,9 @@
               }
             }
           }
-          .with-address-container{
-            .saved-address-wrapper{
-              .address-box{
+          .with-address-container {
+            .saved-address-wrapper {
+              .address-box {
                 flex: 0 0 100%;
               }
             }

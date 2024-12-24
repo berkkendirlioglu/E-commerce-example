@@ -1,144 +1,93 @@
 import { useEffect, useState } from "react";
 import styles from "./style.module.scss";
 import { navBarStore } from "../../store/NavbarStore";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { AddressType, submitFormType, DeliveryType } from "../index.ts";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { PaymentMethodPayload } from "../index.ts";
 import { NavLink } from "react-router-dom";
 import { shippingMethod } from "../../dummyData/shippingMethod";
+import { AllAddressType } from "../../types/AddressType.ts";
+import { GetAllMyAddress, OrderToProducts } from "../../services/collection/auth.ts";
+import { OrderToProductsPayload } from "../../types/PaymentTypes.ts";
+import { getRefreshToken } from "../../services/storage.ts";
 
-const BASE_URL:string = "https://fe1111.projects.academy.onlyjs.com"
+const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
+const refresh_token = getRefreshToken();
 
 function Payment() {
-  const [savedAddress, setsavedAddress] = useState<AddressType[]>(() => {
-    const address = localStorage.getItem("address");
-    return address ? JSON.parse(address) : [];
-  });
-
-  const { basket, setBasket } = navBarStore();
-
-  const { register, handleSubmit } = useForm<submitFormType>();
-
-  const [activeAddress, setactiveAddress] = useState<string | undefined>(
-    savedAddress.length > 0 ? savedAddress[0].title : undefined
-  );
+  const { basket , setBasket } = navBarStore();
+  const { register, control, handleSubmit } = useForm<PaymentMethodPayload>();
+  const [myAddresses, setmyAddresses] = useState<AllAddressType>();
+  const [selectedAddress, setselectedAddress] = useState<string>();
   const [activeShipping, setactiveShipping] = useState<string | undefined>(
     shippingMethod.length > 0 ? shippingMethod[0].name : undefined
   );
-  const [deliveryProducts, setdeliveryProducts] =
-    useState<DeliveryType>();
-
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [paymentChoise, setPaymentChoise] = useState<string>();
+  const [orderNumber, setOrderNumber] = useState<string>();
 
   useEffect(() => {
-    setsavedAddress(() => {
-      const arrayAddress = localStorage.getItem("address");
-      return arrayAddress ? JSON.parse(arrayAddress) : [];
-    })
+    if(!refresh_token || !basket){
+      throw new Error();
+    }
+
+    const allMyAddress = async () => {
+      const response = await GetAllMyAddress();
+      setmyAddresses(response);
+      setselectedAddress(response.data.results[0].id);
+    };
+    
+    allMyAddress();
   }, []);
+
+  const CompletePayment: SubmitHandler<PaymentMethodPayload> = async (data) => {
+    const modifiedDate = data.card_expiration_date;
+    const [month, year] = modifiedDate.split("-");
+    const modifiedYear = year.slice(-2);
+    const cardExpirationDate = `${month}-${modifiedYear}`
+    const paymentMethod = paymentChoise;
+    const selectedAddressId = selectedAddress;
+
+    const finalData:OrderToProductsPayload = {...data,payment_type:paymentMethod, card_expiration_date:cardExpirationDate,card_type:"VISA", address_id:selectedAddressId, card_digits:data.card_digits.toString() };
+
+    const response = await OrderToProducts(finalData)
+
+    console.log(response);
+
+    if(response.status === "success"){
+      setOrderNumber(response.data.order_no);
+      goToNextStep();
+      setBasket(null)
+    }
+  };
 
   const goToNextStep = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
-  const handleDeliveryAddressForm: SubmitHandler<submitFormType> = (data) => {
-    const arrayAddress: AddressType = JSON.parse(data.address);
-    setdeliveryProducts(() => ({
-      products: basket,
-      address: arrayAddress,
-    }));
-    goToNextStep();
-  };
-
-  const handleDeliveryShippingForm: SubmitHandler<submitFormType> = (data) => {
-    const shippingObj = data.shipping ? JSON.parse(data.shipping) : undefined;
-    setdeliveryProducts((delivery) => ({
-      ...delivery,
-      shipping: shippingObj,
-    }));
-    goToNextStep();
-  };
-
-  const handleDeliveryCreditCardForm: SubmitHandler<submitFormType> = (
-    data
-  ) => {
-    const creditCardObject = {
-      cardMonth: data.cardMonth,
-      cardNumber: data.cardNumber,
-      cvvCode: data.cvvCode,
-      fullName: data.fullName,
-      cardYear: data.cardYear,
-    };
-
-    const currentDate: string = new Date().toLocaleDateString("tr-TR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    const deliveryNumber = Math.random().toString().slice(2, 16);
-    setdeliveryProducts((delivery) => {
-      const updatedDelivery = {
-        ...delivery,
-        payment: creditCardObject,
-        deliveryNumber: deliveryNumber,
-        deliveryDate: currentDate,
-      };
-
-      const existingDeliveries = JSON.parse(
-        localStorage.getItem("completeDelivery") || "[]"
-      );
-
-      if (Array.isArray(existingDeliveries)) {
-        existingDeliveries.push(updatedDelivery);
-      }
-
-      localStorage.setItem(
-        "completeDelivery",
-        JSON.stringify(existingDeliveries)
-      );
-
-      return updatedDelivery;
-    });
-
-    goToNextStep();
-
-    setBasket([]);
-
-    setTimeout(() => {
-      localStorage.removeItem("basket");
-    }, 1000);
-  };
-
-  const handleChangeAddress = (title: string) => {
-    setactiveAddress(title);
-  };
-  const handleChangeShipping = (title: string) => {
-    setactiveShipping(title);
+  const handleChangeShipping = (id: string) => {
+    setactiveShipping(id);
   };
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear + i);
-  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const years = Array.from({ length: 12 }, (_, i) => currentYear + i);
+  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2,"0"));
 
-  const basketUndiscountedPrice = basket.reduce((accumulator, item) => {
-    return accumulator + item.count! * item.price.total_price;
-  }, 0);
+  const basketUndiscountedPrice = basket?.data.items.reduce(
+    (accumulator, item) => {
+      return accumulator + item.pieces! * item.unit_price;
+    },
+    0
+  );
 
-  const basketTotalPrice = basket.reduce((accumulator, item) => {
-    return item.price.discounted_price ? accumulator + item.count! * item.price.discounted_price! : accumulator + item.count! * item.price.total_price!;
-  }, 0);
+  const deliveryAddress = myAddresses?.data.results.filter(
+    (address) => address.id === selectedAddress
+  );
 
   return (
     <div className={`${styles["payment-container"]}`}>
       {currentStep === 4 ? (
         <div className={`${styles["complete-delivery-wrapper"]}`}>
-          <img
-            width={150}
-            src="https://i.imgur.com/oFOjevY.png"
-            alt=""
-          />
+          <img width={150} src="https://i.imgur.com/oFOjevY.png" alt="" />
           <h3 className={`${styles["complete-title"]}`}>
             Siparişiniz Başarı ile Alınmıştır!
           </h3>
@@ -146,7 +95,7 @@ function Payment() {
             Aşağıdaki sipariş kodu ile siparişinizi kontrol edebilirsiniz.
           </p>
           <p className={`${styles["delivery-number"]}`}>
-            Sipariş No: {deliveryProducts?.deliveryNumber}
+            Sipariş No: {orderNumber}
           </p>
           <NavLink
             className={`${styles["my-account-link"]}`}
@@ -162,7 +111,7 @@ function Payment() {
               <div className={`${styles["current-step"]}`}>
                 <span
                   className={`${styles["step"]} ${
-                    deliveryProducts?.address
+                    myAddresses?.data.results.length! > 0
                       ? styles["complete-step"]
                       : styles["not-complete-step"]
                   }`}
@@ -172,7 +121,10 @@ function Payment() {
               </div>
 
               <div className={`${styles["step-content"]}`}>
-                <div onClick={() => setCurrentStep(1)} className={`${styles["step-title-wrapper"]}`}>
+                <div
+                  onClick={() => setCurrentStep(1)}
+                  className={`${styles["step-title-wrapper"]}`}
+                >
                   <h5 className={`${styles["step-title"]}`}>Adres</h5>
                 </div>
 
@@ -190,16 +142,13 @@ function Payment() {
                   </div>
 
                   <div className={`${styles["optional-select-wrapper"]}`}>
-                    {savedAddress.length > 0 ? (
-                      <form
-                        onSubmit={handleSubmit(handleDeliveryAddressForm)}
-                        className={`${styles["optional-select-form"]}`}
-                      >
-                        {savedAddress.map((address, index) => (
+                    {myAddresses?.data.results.length! > 0 ? (
+                      <div className={`${styles["optional-select-form"]}`}>
+                        {myAddresses?.data.results.map((address, index) => (
                           <label
                             key={index}
                             className={`${styles["optional-label"]} ${
-                              activeAddress === address.title
+                              selectedAddress === address.id
                                 ? styles["selected-option"]
                                 : ""
                             }`}
@@ -208,33 +157,50 @@ function Payment() {
                               className={`${styles["optional-input-wrapper"]}`}
                             >
                               <input
-                                {...register("address")}
                                 className={`${styles["optional-checkbox"]}`}
                                 type="checkbox"
                                 name="address"
-                                value={JSON.stringify(savedAddress[index])}
-                                checked={activeAddress === address.title}
-                                onChange={() =>
-                                  handleChangeAddress(address.title)
-                                }
+                                value={address.id}
+                                checked={selectedAddress === address.id}
+                                onChange={() => setselectedAddress(address.id)}
                               />
+                              <span className={`${styles["custom-checkbox"]}`}>
+                                <span className={`${styles["check-icon"]}`}>
+                                  ✓
+                                </span>
+                              </span>
                             </div>
 
                             <div className={`${styles["optional-title-full"]}`}>
-                              <strong className={`${styles["optional-title"]}`}>
-                                {address.title}
-                              </strong>
                               <div
-                                className={`${styles["optional-full"]}`}
-                              >{`${address.address}, ${address.state}, ${address.city}`}</div>
+                                className={`${styles["optional-title-wrapper"]}`}
+                              >
+                                <strong
+                                  className={`${styles["optional-title"]}`}
+                                >
+                                  {address.title}
+                                </strong>
+                                <button
+                                  onClick={() => console.log("edit address")}
+                                  className={`${styles["edit-address-button"]}`}
+                                >
+                                  Düzenle
+                                </button>
+                              </div>
+                              <div className={`${styles["optional-full"]}`}>
+                                {`${address.full_address}, ${address.subregion.name} ,${address.region.name}, ${address.country.name},`}
+                              </div>
                             </div>
                           </label>
                         ))}
 
-                        <button className={`${styles["next-step-button"]}`}>
+                        <button
+                          onClick={() => goToNextStep()}
+                          className={`${styles["next-step-button"]}`}
+                        >
                           Kargo ile Devam Et
                         </button>
-                      </form>
+                      </div>
                     ) : (
                       <div className={`${styles["havent-address-wrapper"]}`}>
                         <h4 className={`${styles["havent-address-text"]}`}>
@@ -258,7 +224,7 @@ function Payment() {
               <div className={`${styles["current-step"]}`}>
                 <span
                   className={`${styles["step"]} ${
-                    deliveryProducts?.shipping
+                    currentStep === 3
                       ? styles["complete-step"]
                       : styles["not-complete-step"]
                   }`}
@@ -268,7 +234,10 @@ function Payment() {
               </div>
 
               <div className={`${styles["step-content"]}`}>
-                <div onClick={() => setCurrentStep(2)} className={`${styles["step-title-wrapper"]}`}>
+                <div
+                  onClick={() => setCurrentStep(2)}
+                  className={`${styles["step-title-wrapper"]}`}
+                >
                   <h5 className={`${styles["step-title"]}`}>Kargo</h5>
                 </div>
 
@@ -286,10 +255,7 @@ function Payment() {
                   </div>
 
                   <div className={`${styles["optional-select-wrapper"]}`}>
-                    <form
-                      onSubmit={handleSubmit(handleDeliveryShippingForm)}
-                      className={`${styles["optional-select-form"]}`}
-                    >
+                    <div className={`${styles["optional-select-form"]}`}>
                       {shippingMethod.map((shipping, i) => (
                         <label
                           key={i}
@@ -303,7 +269,6 @@ function Payment() {
                             className={`${styles["optional-input-wrapper"]}`}
                           >
                             <input
-                              {...register("shipping")}
                               className={`${styles["optional-checkbox"]}`}
                               type="checkbox"
                               name="shipping"
@@ -313,6 +278,11 @@ function Payment() {
                                 handleChangeShipping(shipping.name)
                               }
                             />
+                            <span className={`${styles["custom-checkbox"]}`}>
+                              <span className={`${styles["check-icon"]}`}>
+                                ✓
+                              </span>
+                            </span>
                           </div>
 
                           <div className={`${styles["optional-title-full"]}`}>
@@ -326,10 +296,13 @@ function Payment() {
                         </label>
                       ))}
 
-                      <button className={`${styles["next-step-button"]}`}>
+                      <button
+                        onClick={() => goToNextStep()}
+                        className={`${styles["next-step-button"]}`}
+                      >
                         Ödeme ile Devam et
                       </button>
-                    </form>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -339,7 +312,7 @@ function Payment() {
               <div className={`${styles["current-step"]}`}>
                 <span
                   className={`${styles["step"]} ${
-                    deliveryProducts?.payment
+                    currentStep === 3
                       ? styles["complete-step"]
                       : styles["not-complete-step"]
                   }`}
@@ -349,7 +322,10 @@ function Payment() {
               </div>
 
               <div className={`${styles["step-content"]}`}>
-                <div onClick={() => setCurrentStep(3)} className={`${styles["step-title-wrapper"]}`}>
+                <div
+                  onClick={() => setCurrentStep(3)}
+                  className={`${styles["step-title-wrapper"]}`}
+                >
                   <h5 className={`${styles["step-title"]}`}>Ödeme</h5>
                 </div>
 
@@ -367,81 +343,150 @@ function Payment() {
                   </div>
 
                   <div className={`${styles["optional-select-wrapper"]}`}>
-                    <form
-                      onSubmit={handleSubmit(handleDeliveryCreditCardForm)}
-                      className={`${styles["optional-select-form"]}`}
-                    >
-                      <label htmlFor="fullName">
-                        Kart Üzerindeki İsim Soyisim*
-                      </label>
-                      <input
-                        {...register("fullName")}
-                        name="fullName"
-                        type="text"
-                        id={`${styles["fullName"]}`}
-                      />
-                      <label htmlFor="cardNumber">Kart Numarası*</label>
-                      <input
-                        {...register("cardNumber")}
-                        name="cardNumber"
-                        type="text"
-                        maxLength={16}
-                        id={`${styles["cardNumber"]}`}
-                      />
-
-                      <div className={`${styles["expired-cvv-wrapper"]}`}>
-                        <label
-                          className={`${styles["expired-date-wrapper"]}`}
-                          htmlFor="expiredDate"
-                        >
-                          <span>Son Kullanma Tarihi*</span>
-                          <div className={`${styles["expired-date-inputs"]}`}>
-                            <select
-                              {...register("cardMonth")}
-                              name="months"
-                              id="month"
-                            >
-                              {months.map((month, index) => (
-                                <option key={index} value={month}>
-                                  {month}
-                                </option>
-                              ))}
-                            </select>
-
-                            <select
-                              {...register("cardYear")}
-                              name="years"
-                              id="year"
-                            >
-                              {years.map((year, index) => (
-                                <option key={index} value={year}>
-                                  {year}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                    <div className={`${styles["payment-choise-wrapper"]}`}>
+                      <select
+                        className={`${styles["payment-choise-input"]}`}
+                        defaultValue={"payment-choise"}
+                        onChange={(e) => setPaymentChoise(e.target.value)}
+                      >
+                        <option defaultChecked disabled value="payment-choise">
+                          Ödeme Yöntemini Seçin...
+                        </option>
+                        <option value="credit_cart">Kredi Kartı</option>
+                        <option value="credit_cart_at_door">
+                          Kapıda Kredi Kartı
+                        </option>
+                        <option value="cash_at_door">Kapıda Nakit</option>
+                      </select>
+                    </div>
+                    {paymentChoise === "credit_cart" && (
+                      <form
+                        onSubmit={handleSubmit(CompletePayment)}
+                        className={`${styles["optional-select-form"]}`}
+                      >
+                        <label htmlFor="fullName">
+                          Kart Üzerindeki İsim Soyisim*
                         </label>
+                        <input
+                          name="fullName"
+                          type="text"
+                          id={`${styles["fullName"]}`}
+                        />
+                        <label htmlFor="card_digits">Kart Numarası*</label>
+                        <input
+                          {...register("card_digits")}
+                          name="card_digits"
+                          type="text"
+                          maxLength={16}
+                          id={`${styles["cardNumber"]}`}
+                        />
 
-                        <label
-                          className={`${styles["cvv-code-wrapper"]}`}
-                          htmlFor="cvvCode"
-                        >
-                          <div>
-                            CVV*&nbsp;
-                            <span></span>
+                        <div className={`${styles["expired-cvv-wrapper"]}`}>
+                          <label
+                            className={`${styles["expired-date-wrapper"]}`}
+                            htmlFor="expiredDate"
+                          >
+                            <span>Son Kullanma Tarihi*</span>
+                            <div className={`${styles["expired-date-inputs"]}`}>
+                              <Controller
+                                name="card_expiration_date"
+                                control={control}
+                                render={({ field }) => {
+                                  const { onChange, value } = field;
+
+                                  const [selectedMonth, selectedYear] =
+                                    value?.split("-") || [months[0], years[0]];
+
+                                  return (
+                                    <div>
+                                      <select
+                                        name="month"
+                                        id="month"
+                                        value={selectedMonth}
+                                        onChange={(e) =>
+                                          onChange(
+                                            `${
+                                              e.target.value
+                                            }-${selectedYear}`
+                                          )
+                                        }
+                                      >
+                                        {months.map((month, index) => (
+                                          <option key={index} value={month}>
+                                            {month}
+                                          </option>
+                                        ))}
+                                      </select>
+
+                                      <select
+                                        name="year"
+                                        id="year"
+                                        value={selectedYear}
+                                        onChange={(e) =>
+                                          onChange(
+                                            `${selectedMonth}-${e.target.value}`
+                                          )
+                                        }
+                                      >
+                                        {years.map((year, index) => (
+                                          <option key={index} value={year}>
+                                            {year}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                  );
+                                }}
+                              />
+                            </div>
+                          </label>
+
+                          <label
+                            className={`${styles["cvv-code-wrapper"]}`}
+                            htmlFor="cvvCode"
+                          >
+                            <div>
+                              CVV*&nbsp;
+                              <span></span>
+                            </div>
+                            <input
+                              {...register("card_security_code")}
+                              type="text"
+                              maxLength={4}
+                            />
+                          </label>
+                        </div>
+
+                        <button className={`${styles["next-step-button"]}`}>
+                          Ödemeyi Tamamla
+                        </button>
+                      </form>
+                    )}
+                    {(paymentChoise === "credit_cart_at_door" ||
+                      paymentChoise === "cash_at_door") && (
+                      <div className={`${styles["payment-address-wrapper"]}`}>
+                        <h5>Sipariş Adresi</h5>
+                        {deliveryAddress?.map((address) => (
+                          <div
+                            key={address.id}
+                            className={`${styles["payment-address-content"]}`}
+                          >
+                            <span
+                              className={`${styles["payment-full-name"]}`}
+                            >{`${address.first_name} ${address.last_name}`}</span>
+                            <span
+                              className={`${styles["payment-address-title"]}`}
+                            >
+                              {address.title}
+                            </span>
+                            <span
+                              className={`${styles["payment-full-address"]}`}
+                            >{`${address.full_address}, ${address.country.name}, ${address.region.name}, ${address.subregion.name}`}</span>
+                            <span>{`${address.phone_number}`}</span>
                           </div>
-                          <input
-                            {...register("cvvCode")}
-                            type="text"
-                            maxLength={4}
-                          />
-                        </label>
+                        ))}
                       </div>
-
-                      <button className={`${styles["next-step-button"]}`}>
-                        Ödemeyi Tamamla
-                      </button>
-                    </form>
+                    )}
                   </div>
                 </div>
               </div>
@@ -450,38 +495,37 @@ function Payment() {
 
           <div className={`${styles["basket-products-wrapper"]}`}>
             <div className={`${styles["basket-product-content"]}`}>
-              {basket.map((products, index) => (
+              {basket?.data.items.map((products, index) => (
                 <div className={`${styles["product-card"]}`} key={index}>
                   <div className={`${styles["product-first-content"]}`}>
                     <div className={`${styles["product-img-wrapper"]}`}>
                       <img
-                        src={BASE_URL + products.photo_src}
-                        alt={products.name}
+                        src={
+                          BASE_URL + products.product_variant_detail.photo_src
+                        }
+                        alt={products.product}
                       />
                       <div className={`${styles["product-count"]}`}>
-                        {products.count}
+                        {products.pieces}
                       </div>
                     </div>
                     <div className={`${styles["product-detail-wrapper"]}`}>
                       <p className={`${styles["product-name"]}`}>
-                        {products.name}
+                        {products.product}
                       </p>
                       <p className={`${styles["product-gram-flavor"]}`}>
-                        {products.aroma && products.aroma === "Aromasız"
+                        {products.product_variant_detail.aroma === "Aromasız"
                           ? ""
-                          : `${products.aroma} / `}
-                        {products.size.gram
-                          ? `${products.size.gram}G`
-                          : `${products.size.pieces} Adet`}
+                          : `${products.product_variant_detail.aroma} / `}
+                        {products.product_variant_detail.size.gram
+                          ? `${products.product_variant_detail.size.gram}G`
+                          : `${products.product_variant_detail.size.pieces} Adet`}
                       </p>
                     </div>
                   </div>
                   <div className={`${styles["product-second-content"]}`}>
                     <p className={`${styles["product-price"]}`}>
-                      {(
-                        products.count! * products.price.total_price
-                      ).toLocaleString("tr-TR")}{" "}
-                      TL
+                      {products.total_price.toLocaleString("tr-TR")} TL
                     </p>
                   </div>
                 </div>
@@ -490,12 +534,12 @@ function Payment() {
             <div className={`${styles["total-price-wrapper"]}`}>
               <div className={`${styles["undiscounted-price-wrapper"]}`}>
                 <p>Ara Toplam</p>
-                <p>{basketUndiscountedPrice.toLocaleString("tr-TR")} TL</p>
+                <p>{basketUndiscountedPrice?.toLocaleString("tr-TR")} TL</p>
               </div>
 
               <div className={`${styles["product-total-price"]}`}>
                 <p>Toplam</p>
-                <p>{basketTotalPrice.toLocaleString("tr-TR")} TL</p>
+                <p>{basket?.data.total_price} TL</p>
               </div>
             </div>
           </div>

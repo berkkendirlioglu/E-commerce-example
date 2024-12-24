@@ -402,6 +402,27 @@
       }
     }
   }
+  .not-logged-container{
+    position: fixed;
+    top:0;
+    left: 50%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%,-100px);
+    z-index: 99999;
+    transition: all .2s linear;
+    .not-logged-text{
+      padding: 1rem 2rem;
+      background: #ff0000;
+      color: #fff;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+  }
+  .show-not-logged{
+    transform: translate(-50%,100px);
+    opacity: 1;
+  }
 }
 
 
