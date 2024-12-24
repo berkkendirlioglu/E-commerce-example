@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ProductInfo, CategoriesType, VariantsType } from "../pages/index.ts";
+import { ProductInfo, CategoriesType } from "../pages/index.ts";
 import { UsersType } from "../types/AccountType.ts";
 import { BasketProductType } from "../types/ProductDetailType.ts";
 
