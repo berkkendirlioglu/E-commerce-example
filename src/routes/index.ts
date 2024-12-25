@@ -35,12 +35,6 @@ export { Certificates } from "../dummy-data/certificates.ts";
 export { default as Banner } from "../assets/images/banner.png";
 export { default as SecBanner } from "../assets/images/secbanner.png";
 export { default as Logo_Beyaz } from "../assets/images/LOGO_Beyaz.png";
-export { default as ProteinImage } from "../assets/images/protein.png";
-export { default as VitaminlerImage } from "../assets/images/vitaminler.png";
-export { default as SaglıkImage } from "../assets/images/saglık.png";
-export { default as SporGidalariImage } from "../assets/images/spor-gıdaları.png";
-export { default as GidaImage } from "../assets/images/gıda.png";
-export { default as AllProductsImage } from "../assets/images/allproducts.png";
 export { default as Logo_Siyah } from "../assets/images/LOGO_Siyah.png";
 
 // Types
