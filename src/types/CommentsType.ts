@@ -1,4 +1,4 @@
-export default interface CommentsType {
+export interface CommentsType {
     date:string,
     title:string,
     desc:string,

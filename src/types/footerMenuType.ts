@@ -1,4 +1,4 @@
-export default interface FooterMenuType {
+export interface FooterMenuType {
     resTitle:string,
     title:string,
     links:{

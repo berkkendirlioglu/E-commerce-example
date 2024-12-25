@@ -1,4 +1,4 @@
-export default interface CategoriesType{
+export interface CategoriesType{
     status:string,
     data:{
       data:{

@@ -1,6 +1,4 @@
-interface sssStoreType {
+export interface sssStoreType {
     title:string,
     content:string,
 }
-
-export default sssStoreType;

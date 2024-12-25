@@ -1,4 +1,4 @@
-export default interface ProductDetailType {
+export interface ProductDetailType {
   status: string;
   data: {
     id: string;

@@ -1,5 +1,3 @@
-interface CertificatesType{
+export interface CertificatesType{
     src:string,
 }
-
-export default CertificatesType;
