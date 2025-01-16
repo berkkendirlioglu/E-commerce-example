@@ -55,7 +55,7 @@ export function Payment() {
     if(response.status === "success"){
       setOrderNumber(response.data.order_no);
       goToNextStep();
-      setBasket(null)
+      setBasket(undefined)
     }
   };
 
