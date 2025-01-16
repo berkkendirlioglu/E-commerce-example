@@ -9,7 +9,7 @@ interface NavbarStoreType {
     handleBasket:boolean,
     handleAccount:boolean,
     handlePopupMenu:number | null,
-    basket:BasketProductType | null,
+    basket:BasketProductType | undefined,
     search:string | undefined,
     searchResults:ProductInfo[] | undefined,
     profileDetail:UsersType | undefined
@@ -18,7 +18,7 @@ interface NavbarStoreType {
     sethandleBasket: () => void;
     sethandleAccount: () => void;
     sethandlePopupMenu: (handlePopupMenu:number | null) => void;
-    setBasket:(newBasket: BasketProductType | null) => void;
+    setBasket:(newBasket: BasketProductType | undefined) => void;
     setSearch:(search:string | undefined) => void,
     setSearchResults: (searchResults: ProductInfo[] | undefined) => void;
     setProfileDetail:(profileDetail:UsersType | undefined) => void;
@@ -30,7 +30,7 @@ export const navBarStore = create<NavbarStoreType>()((set) => ({
     handleBasket:false,
     handleAccount:false,
     handlePopupMenu:null,
-    basket:null,
+    basket:undefined,
     search:undefined,
     searchResults:undefined,
     profileDetail:undefined,

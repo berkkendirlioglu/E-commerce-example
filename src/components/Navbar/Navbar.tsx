@@ -75,7 +75,7 @@ export const Navbar = () => {
       const response = await GetMyBasket();
       setBasket(response);
     }
-    if (access_token) {
+    if (isAutUser) {
       userProfileLoader();
       FetchMyBasket();
     }
@@ -147,6 +147,8 @@ export const Navbar = () => {
   } else {
     document.body.style.overflow = "";
   }
+
+  console.log(basket);
 
   return (
     <nav className={`${styles["navbar"]}`}>
@@ -349,7 +351,8 @@ export const Navbar = () => {
                     : styles["empty-products-wrapper"]
                 }`}
               >
-                {basket?.data.items?.length! > 0 ? (
+                {basket?.data.items?.length! > 0 ? 
+                (
                   <>
                     {basket?.data.items?.map((product) => (
                       <div className={`${styles["product-box"]}`}>
@@ -428,7 +431,8 @@ export const Navbar = () => {
                       </div>
                     ))}
                   </>
-                ) : (
+                ) : 
+                (
                   <div className={`${styles["empty-basket"]}`}>
                     <p className={`${styles["empty-basket-text"]}`}>
                       Sepete eklenmiş herhangi bir ürün yok!
