@@ -14,9 +14,11 @@ import {
 } from "../../services/collection/auth.ts";
 
 const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
-const access_token = getAccessToken();
 
 export const Navbar = () => {
+  const access_token = getAccessToken();
+  const isAutUser = !!access_token;
+
   const {
     categories,
     handleMenu,
@@ -73,12 +75,11 @@ export const Navbar = () => {
       const response = await GetMyBasket();
       setBasket(response);
     }
-    if(access_token){
+    if (access_token) {
       userProfileLoader();
       FetchMyBasket();
     }
   }, []);
-  
 
   useEffect(() => {
     if (search?.trim() === "") {
@@ -253,13 +254,13 @@ export const Navbar = () => {
               className={`${styles["account-wrapper"]}`}
             >
               <NavLink
-                to={`${access_token ? "/my-account" : "/"}`}
+                to={`${isAutUser ? "/my-account" : "/"}`}
                 className={`${styles["account-button"]}`}
               >
                 <span className={`${styles["account-icon"]}`}>
                   <i className="bi bi-person"></i>
                 </span>
-                {access_token ? (
+                {isAutUser ? (
                   <span className={`${styles["account-text-icon"]}`}>
                     {profileDetail?.data.first_name.toLocaleUpperCase()}
                   </span>
