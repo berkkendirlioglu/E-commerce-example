@@ -5,7 +5,10 @@ import { navBarStore } from "../../store/NavbarStore.ts";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { PaymentMethodPayload, shippingMethod } from "../index.ts";
 import { AllAddressType } from "../../types/AddressType.ts";
-import { GetAllMyAddress, OrderToProducts } from "../../services/collection/auth.ts";
+import {
+  GetAllMyAddress,
+  OrderToProducts
+} from "../../services/collection/auth.ts";
 import { OrderToProductsPayload } from "../../types/PaymentTypes.ts";
 import { getRefreshToken } from "../../services/storage.ts";
 
@@ -13,7 +16,7 @@ const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
 const refresh_token = getRefreshToken();
 
 export function Payment() {
-  const { basket , setBasket } = navBarStore();
+  const { basket, setBasket } = navBarStore();
   const { register, control, handleSubmit } = useForm<PaymentMethodPayload>();
   const [myAddresses, setmyAddresses] = useState<AllAddressType>();
   const [selectedAddress, setselectedAddress] = useState<string>();
@@ -25,7 +28,7 @@ export function Payment() {
   const [orderNumber, setOrderNumber] = useState<string>();
 
   useEffect(() => {
-    if(!refresh_token || !basket){
+    if (!refresh_token || !basket) {
       throw new Error();
     }
 
@@ -34,7 +37,7 @@ export function Payment() {
       setmyAddresses(response);
       setselectedAddress(response.data.results[0].id);
     };
-    
+
     allMyAddress();
   }, []);
 
@@ -42,20 +45,25 @@ export function Payment() {
     const modifiedDate = data.card_expiration_date;
     const [month, year] = modifiedDate.split("-");
     const modifiedYear = year.slice(-2);
-    const cardExpirationDate = `${month}-${modifiedYear}`
+    const cardExpirationDate = `${month}-${modifiedYear}`;
     const paymentMethod = paymentChoise;
     const selectedAddressId = selectedAddress;
 
-    const finalData:OrderToProductsPayload = {...data,payment_type:paymentMethod, card_expiration_date:cardExpirationDate,card_type:"VISA", address_id:selectedAddressId, card_digits:data.card_digits.toString() };
+    const finalData: OrderToProductsPayload = {
+      ...data,
+      payment_type: paymentMethod,
+      card_expiration_date: cardExpirationDate,
+      card_type: "VISA",
+      address_id: selectedAddressId,
+      card_digits: data.card_digits.toString(),
+    };
 
-    const response = await OrderToProducts(finalData)
+    const response = await OrderToProducts(finalData);
 
-    console.log(response);
-
-    if(response.status === "success"){
+    if (response.status === "success") {
       setOrderNumber(response.data.order_no);
       goToNextStep();
-      setBasket(undefined)
+      setBasket(undefined);
     }
   };
 
@@ -69,7 +77,9 @@ export function Payment() {
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 12 }, (_, i) => currentYear + i);
-  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2,"0"));
+  const months = Array.from({ length: 12 }, (_, i) =>
+    (i + 1).toString().padStart(2, "0")
+  );
 
   const basketUndiscountedPrice = basket?.data.items.reduce(
     (accumulator, item) => {
@@ -180,7 +190,6 @@ export function Payment() {
                                   {address.title}
                                 </strong>
                                 <button
-                                  onClick={() => console.log("edit address")}
                                   className={`${styles["edit-address-button"]}`}
                                 >
                                   Düzenle
@@ -404,9 +413,7 @@ export function Payment() {
                                         value={selectedMonth}
                                         onChange={(e) =>
                                           onChange(
-                                            `${
-                                              e.target.value
-                                            }-${selectedYear}`
+                                            `${e.target.value}-${selectedYear}`
                                           )
                                         }
                                       >
@@ -547,4 +554,3 @@ export function Payment() {
     </div>
   );
 }
-

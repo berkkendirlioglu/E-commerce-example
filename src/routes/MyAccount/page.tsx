@@ -313,7 +313,7 @@ export function MyAccount() {
 
                       <div className={`${styles["detail-title-wrapper"]}`}>
                         <span className={`${styles["delivery-status"]}`}>
-                          {orderDetails?.data.order_status === "in_cargo"
+                          {orderDetails?.data.order_status === "in_cargo" 
                             ? "Kargoya Verildi."
                             : orderDetails?.data.order_status === "delivered"
                             ? "Teslim Edildi"

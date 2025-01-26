@@ -75,6 +75,7 @@ export const Navbar = () => {
       const response = await GetMyBasket();
       setBasket(response);
     }
+    
     if (isAutUser) {
       userProfileLoader();
       FetchMyBasket();
@@ -147,8 +148,6 @@ export const Navbar = () => {
   } else {
     document.body.style.overflow = "";
   }
-
-  console.log(basket);
 
   return (
     <nav className={`${styles["navbar"]}`}>
