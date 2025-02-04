@@ -7,13 +7,12 @@ import {
   SizeType,
   Comments,
   CommentsGraphs,
-  CommentsType
 } from "../index.ts";
 import { navBarStore } from "../../store/NavbarStore.ts";
 import { useLoaderData, LoaderFunction, Params } from "react-router-dom";
 import { ReactNode, useEffect, useState } from "react";
 import { BasketProductsPayload } from "../../types/ProductDetailType.ts";
-import { AddBasketToProduct, GetMyBasket, ProductsComments } from "../../services/collection/auth.ts";
+import { AddBasketToProduct, GetMyBasket } from "../../services/collection/auth.ts";
 import { getAccessToken } from "../../services/storage.ts";
 
 const Accordion = ({
