@@ -4,13 +4,22 @@ import { NavLink } from "react-router-dom";
 import { navBarStore } from "../../store/NavbarStore.ts";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { PaymentMethodPayload, shippingMethod } from "../index.ts";
-import { AllAddressType } from "../../types/AddressType.ts";
 import {
+  AddressPayloadType,
+  AllAddressType,
+  CountriesType,
+  RegionType,
+  SubRegionType,
+} from "../../types/AddressType.ts";
+import {
+  EditMyAddress,
   GetAllMyAddress,
-  OrderToProducts
+  OrderToProducts,
 } from "../../services/collection/auth.ts";
 import { OrderToProductsPayload } from "../../types/PaymentTypes.ts";
 import { getRefreshToken } from "../../services/storage.ts";
+import PhoneInput from "react-phone-input-2";
+import axios from "axios";
 
 const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";
 const refresh_token = getRefreshToken();
@@ -18,6 +27,7 @@ const refresh_token = getRefreshToken();
 export function Payment() {
   const { basket, setBasket } = navBarStore();
   const { register, control, handleSubmit } = useForm<PaymentMethodPayload>();
+  const addressForm = useForm<AddressPayloadType>();
   const [myAddresses, setmyAddresses] = useState<AllAddressType>();
   const [selectedAddress, setselectedAddress] = useState<string>();
   const [activeShipping, setactiveShipping] = useState<string | undefined>(
@@ -26,6 +36,64 @@ export function Payment() {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [paymentChoise, setPaymentChoise] = useState<string>();
   const [orderNumber, setOrderNumber] = useState<string>();
+  const [addressId, setAddressId] = useState<string>("");
+  const [handleEditAddress, setHandleEditAddress] = useState<boolean>();
+  const [Countries, setCountries] = useState<CountriesType>();
+  const [Region, setRegion] = useState<RegionType>();
+  const [subRegion, setsubRegion] = useState<SubRegionType>();
+  const [selectedCountry, setselectedCountry] = useState<string | null>();
+  const [selectedRegion, setselectedRegion] = useState<string | null>();
+  const [selectedSubRegion, setselectedSubRegion] = useState<string | null>();
+
+  console.log(addressId);
+  console.log(handleEditAddress);
+
+  useEffect(() => {
+    const response = axios
+      .get(`${BASE_URL}/api/v1/world/countries?limit=252`)
+      .then((response) => {
+        setCountries(response.data);
+      });
+    if (!response) {
+      throw new Error("Countries can't loading!");
+    }
+  }, [addressId]);
+
+  useEffect(() => {
+    if (selectedCountry === undefined) {
+      return;
+    }
+
+    const response = axios
+      .get(
+        `${BASE_URL}/api/v1/world/region?limit=999&offset=0&country-name=${selectedCountry}`
+      )
+      .then((response) => {
+        setRegion(response.data);
+      });
+
+    if (!response) {
+      throw new Error("Region can't loading!");
+    }
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    if (selectedRegion === undefined) {
+      return;
+    }
+
+    const response = axios
+      .get(
+        `${BASE_URL}/api/v1/world/subregion?limit=999&offset=0&region-name=${selectedRegion}`
+      )
+      .then((response) => {
+        setsubRegion(response.data);
+      });
+
+    if (!response && !subRegion) {
+      throw new Error("Subregion can't loading!");
+    }
+  }, [selectedRegion]);
 
   useEffect(() => {
     if (!refresh_token || !basket) {
@@ -91,6 +159,17 @@ export function Payment() {
   const deliveryAddress = myAddresses?.data.results.filter(
     (address) => address.id === selectedAddress
   );
+
+  const editMyAddress = async (data: AddressPayloadType) => {
+    const response = await EditMyAddress({ data, addressId });
+    if (response.status === "success") {
+      setHandleEditAddress(false);
+      const renewedAddress = await GetAllMyAddress();
+      setmyAddresses(renewedAddress);
+    } else {
+      alert("hatalı işlemler mevcut!");
+    }
+  };
 
   return (
     <div className={`${styles["payment-container"]}`}>
@@ -190,6 +269,10 @@ export function Payment() {
                                   {address.title}
                                 </strong>
                                 <button
+                                  onClick={() => {
+                                    setAddressId(address.id),
+                                      setHandleEditAddress(true);
+                                  }}
                                   className={`${styles["edit-address-button"]}`}
                                 >
                                   Düzenle
@@ -221,6 +304,238 @@ export function Payment() {
                         >
                           Adreslerim
                         </NavLink>
+                      </div>
+                    )}
+                    {handleEditAddress && (
+                      <div className={`${styles["modal-container"]}`}>
+                        <div className={`${styles["modal-wrapper"]}`}>
+                          <div className={`${styles["modal-title-wrapper"]}`}>
+                            <h5 className={`${styles["modal-title"]}`}>
+                              Adresi Düzenle
+                            </h5>
+                            <button
+                              className={`${styles["modal-close-button"]}`}
+                              onClick={() => setHandleEditAddress(false)}
+                            >
+                              <i className="bi bi-x-lg"></i>
+                            </button>
+                          </div>
+
+                          <div className={`${styles["modal-form-wrapper"]}`}>
+                            <form
+                              onSubmit={addressForm.handleSubmit(editMyAddress)}
+                              action="#"
+                              className={`${styles["modal-form"]}`}
+                            >
+                              <label
+                                className={`${styles["address-title-label"]}`}
+                              >
+                                *Adres Başlığı
+                              </label>
+                              <input
+                                {...addressForm.register("title")}
+                                id={`${styles["address-title-input"]}`}
+                                type="text"
+                                placeholder="ev,iş vb..."
+                                required
+                              />
+
+                              <label
+                                className={`${styles["address-firstName-label"]}`}
+                              >
+                                *Ad
+                              </label>
+                              <input
+                                {...addressForm.register("first_name")}
+                                id={`${styles["address-firstName-input"]}`}
+                                type="text"
+                                required
+                              />
+
+                              <label
+                                className={`${styles["address-lastName-label"]}`}
+                              >
+                                *Soyad
+                              </label>
+                              <input
+                                {...addressForm.register("last_name")}
+                                id={`${styles["address-lastName-input"]}`}
+                                type="text"
+                                required
+                              />
+
+                              <label className={`${styles["address-label"]}`}>
+                                *Adres
+                              </label>
+                              <input
+                                {...addressForm.register("full_address")}
+                                id={`${styles["address-input"]}`}
+                                type="text"
+                                required
+                              />
+
+                              <label
+                                className={`${styles["address-city-label"]}`}
+                              >
+                                *Ülke
+                              </label>
+                              <select
+                                {...addressForm.register("country_id", {
+                                  setValueAs: (value) => parseInt(value, 10),
+                                })}
+                                id={`${styles["address-city-input"]}`}
+                                required
+                                onChange={(e) => {
+                                  const selectedCountryId =
+                                    Countries?.data.results.find(
+                                      (country) =>
+                                        country.id === Number(e.target.value)
+                                    );
+
+                                  setselectedCountry(
+                                    selectedCountryId
+                                      ? selectedCountryId.name
+                                      : null
+                                  );
+                                }}
+                                defaultValue={"Ülke"}
+                              >
+                                <option disabled defaultChecked value="Ülke">
+                                  Ülke
+                                </option>
+                                {Countries?.data.results.map((country) => (
+                                  <option key={country.id} value={country.id}>
+                                    {country.name}
+                                  </option>
+                                ))}
+                              </select>
+
+                              <label
+                                className={`${styles["address-state-label"]}`}
+                              >
+                                *Şehir
+                              </label>
+                              <select
+                                {...addressForm.register("region_id", {
+                                  setValueAs: (value) => parseInt(value, 10),
+                                })}
+                                id={`${styles["address-state-input"]}`}
+                                required
+                                defaultValue={"Şehir"}
+                                onChange={(e) => {
+                                  const selectedRegionId =
+                                    Region?.data.results.find(
+                                      (region) =>
+                                        region.id === Number(e.target.value)
+                                    );
+
+                                  setselectedRegion(
+                                    selectedRegionId
+                                      ? selectedRegionId.name
+                                      : null
+                                  );
+                                }}
+                              >
+                                <option defaultChecked disabled value="Şehir">
+                                  Şehir
+                                </option>
+                                {Region?.data.results.map((region) => (
+                                  <option key={region.id} value={region.id}>
+                                    {region.name}
+                                  </option>
+                                ))}
+                              </select>
+
+                              <label
+                                className={`${styles["address-subregion-label"]}`}
+                              >
+                                {!selectedSubRegion && "*İlçe"}
+                              </label>
+                              <select
+                                {...addressForm.register("subregion_id", {
+                                  setValueAs: (value) => parseInt(value, 10),
+                                })}
+                                onChange={(e) => {
+                                  const selectedSubregionId =
+                                    subRegion?.data.results.find(
+                                      (subregion) =>
+                                        subregion.id === Number(e.target.value)
+                                    );
+
+                                  setselectedSubRegion(
+                                    selectedSubregionId
+                                      ? selectedSubregionId.name
+                                      : null
+                                  );
+                                }}
+                                id={`${styles["address-subregion-input"]}`}
+                                required
+                                defaultValue={"İlçe"}
+                              >
+                                <option value="İlçe" defaultChecked disabled>
+                                  İlçe
+                                </option>
+                                {subRegion?.data.results.map((region) => (
+                                  <option key={region.id} value={region.id}>
+                                    {region.name}
+                                  </option>
+                                ))}
+                              </select>
+
+                              <label
+                                className={`${styles["address-phone-label"]}`}
+                              >
+                                *Telefon
+                              </label>
+
+                              <Controller
+                                name="phone_number"
+                                control={addressForm.control}
+                                defaultValue=""
+                                rules={{
+                                  required: "Telefon numarası zorunludur.",
+                                }}
+                                render={({
+                                  field: { onChange, value },
+                                  fieldState: { error },
+                                }) => (
+                                  <>
+                                    <PhoneInput
+                                      containerClass={`${styles["address-phone-container"]}`}
+                                      inputClass={`${styles["address-phone-input"]}`}
+                                      country={"tr"} // Varsayılan ülke: Türkiye
+                                      value={value}
+                                      onChange={(phone) =>
+                                        onChange(`+${phone}`)
+                                      }
+                                      inputProps={{
+                                        name: "phone_number",
+                                        required: true,
+                                        autoFocus: true,
+                                      }}
+                                    />
+                                    {error && (
+                                      <p style={{ color: "red" }}>
+                                        {error.message}
+                                      </p>
+                                    )}
+                                  </>
+                                )}
+                              />
+
+                              <div
+                                className={`${styles["address-button-wrapper"]}`}
+                              >
+                                <button
+                                  type="submit"
+                                  className={`${styles["address-submit-button"]}`}
+                                >
+                                  Kaydet
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>

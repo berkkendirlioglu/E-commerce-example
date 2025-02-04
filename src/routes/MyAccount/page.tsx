@@ -186,6 +186,7 @@ export function MyAccount() {
   return (
     <div className={`${styles["my-account-container"]}`}>
       <div className={`${styles["my-account-wrapper"]}`}>
+        
         <div className={`${styles["menu-links"]}`}>
           <div className={`${styles["menu-title"]}`}>
             <h2 className={`${styles["title"]}`}>Hesabım</h2>
