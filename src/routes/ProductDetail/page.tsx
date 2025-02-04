@@ -555,7 +555,7 @@ export const ProductDetail = () => {
               </div>
 
               <div className={`${styles["comments-graph"]}`}>
-                <CommentsGraphs />
+                <CommentsGraphs slug={ProductDetail.data.slug} />
               </div>
             </div>
 

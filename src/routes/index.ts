@@ -60,7 +60,7 @@ export type {
 } from "../types/allproductType.ts";
 
 export type { CertificatesType } from "../types/certificatesType.ts";
-export type { CommentsType } from "../types/CommentsType.ts";
+export type { CommentsType, DummyCommentsType } from "../types/CommentsType.ts";
 export type { FooterMenuType } from "../types/footerMenuType.ts";
 export type {
   MostSellerType,

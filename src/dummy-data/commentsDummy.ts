@@ -1,6 +1,6 @@
-import { CommentsType } from "../routes/index.ts";
+import { DummyCommentsType } from "../routes/index.ts";
 
-export const commentsDummy: CommentsType[] = [
+export const commentsDummy: DummyCommentsType[] = [
   {
     date: "03/05/24",
     title: "Beğendim gayet güzeldi",

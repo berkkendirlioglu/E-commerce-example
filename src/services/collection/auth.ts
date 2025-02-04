@@ -223,3 +223,13 @@ export async function AddNewComment(data:SubmitCommentType, slug:string){
 
   return responseJson;
 }
+
+export async function CommentsStatistics(slug:string){
+  const response = await fetch(BASE_URL + `/products/${slug}/rate-statistics`,{
+    method:"GET",
+  })
+
+  const responseJson = await response.json();
+
+  return responseJson;
+}
