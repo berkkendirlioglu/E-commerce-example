@@ -89,11 +89,11 @@ export const About = () => {
                   <div className={`${styles["inspect-btn"]}`}>ÜRÜN İNCELEMELERİ</div>
                 </div>
 
-                <div className={`${styles["comments"]}`}>
+                {/* <div className={`${styles["comments"]}`}>
 
                   <Comments/>
 
-                </div>
+                </div> */}
 
               </div>
 
