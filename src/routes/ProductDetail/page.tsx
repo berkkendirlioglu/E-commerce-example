@@ -6,13 +6,14 @@ import {
   MostSellerCards,
   SizeType,
   Comments,
-  CommentsGraphs
+  CommentsGraphs,
+  CommentsType
 } from "../index.ts";
 import { navBarStore } from "../../store/NavbarStore.ts";
 import { useLoaderData, LoaderFunction, Params } from "react-router-dom";
 import { ReactNode, useEffect, useState } from "react";
 import { BasketProductsPayload } from "../../types/ProductDetailType.ts";
-import { AddBasketToProduct, GetMyBasket } from "../../services/collection/auth.ts";
+import { AddBasketToProduct, GetMyBasket, ProductsComments } from "../../services/collection/auth.ts";
 import { getAccessToken } from "../../services/storage.ts";
 
 const Accordion = ({
@@ -134,6 +135,7 @@ export const ProductDetail = () => {
   const [productCount, setProductCount] = useState<number>(1);
   const [addedBasket, setAddedBasket] = useState<boolean>(false);
   const [notLogged, setNotLogged] = useState<boolean>(false);
+  
   const {setBasket} = navBarStore();
 
   const uniqueAromas = ProductDetail.data.variants.filter(
@@ -161,9 +163,7 @@ export const ProductDetail = () => {
     });
 
     setSelectedVariant(filteredVariant);
-  }, [selectedAroma, selectedSize]);
 
-  useEffect(() => {
     if (uniqueSizes.length > 0) {
       const isSelectedSizeAvailable = uniqueSizes.some(
         (v) =>
@@ -566,7 +566,7 @@ export const ProductDetail = () => {
                 </div>
               </div>
 
-              <Comments />
+              <Comments slug={ProductDetail.data.slug} />
             </div>
           </div>
         </div>

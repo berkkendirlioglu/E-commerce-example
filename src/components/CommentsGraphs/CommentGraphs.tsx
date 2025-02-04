@@ -23,7 +23,7 @@ export const CommentsGraphs = () => {
           data:{
             labels:['⭐⭐⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐', '⭐⭐', '⭐'],
             datasets: [{
-              data:[70,60,30,20,10],
+              data:[2,0,0,0,0],
               backgroundColor:'rgba(33, 38, 171, 1)',
               datalabels:{
                 color:'black',

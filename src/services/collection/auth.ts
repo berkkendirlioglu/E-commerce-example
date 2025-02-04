@@ -16,6 +16,7 @@ import { AllAddressType, CreateAddressResultType, AddressPayloadType } from "../
 import { BasketProductsPayload, BasketProductType } from "../../types/ProductDetailType";
 import { OrderToProductsPayload } from "../../types/PaymentTypes";
 import { AllOrderTypes, OrderDetailsType } from "../../types/OrderTypes";
+import { CommentResponseType, SubmitCommentType } from "../../types/CommentsType";
 
 export async function register(data: RegisterPayload) {
   const response = await fetch(BASE_URL + "/auth/register", {
@@ -195,6 +196,30 @@ export async function GetMyOrderDetails(order_id:string) {
   })
 
   const responseJson = await response.json() as OrderDetailsType
+
+  return responseJson;
+}
+
+export async function ProductsComments(url:string){
+  const response = await fetch(BASE_URL + url,{
+    method:"GET",
+    headers:{
+      "Content-Type": "application/json",
+    }
+  })
+
+  const responseJson = await response.json();
+
+  return responseJson;
+}
+
+export async function AddNewComment(data:SubmitCommentType, slug:string){
+  const response = await FetchWithAuth(`/products/${slug}/comments`,{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
+
+  const responseJson = await response.json() as CommentResponseType;
 
   return responseJson;
 }

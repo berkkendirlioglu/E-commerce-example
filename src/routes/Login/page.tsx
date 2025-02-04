@@ -24,6 +24,7 @@ export const LoginRegisterWrapper = styled.div`
 
 export const Login = () => {
     const [isLogin, setIsLogin] = useState<boolean>(false);
+    const [isCorrectPassword, setisCorrectPassword] = useState<boolean>();
     const handleLogin = async (e:FormEvent) => {
         e.preventDefault();
         const formEl = e.target as HTMLFormElement;
@@ -35,22 +36,27 @@ export const Login = () => {
 
         if(response.access_token){
             setIsLogin(true)
+            setisCorrectPassword(true);
             setTimeout(() => {
                 setIsLogin(false);
-            }, 3000);
+            }, 2000);
             setTimeout(() => {
                 window.location.href = "/";
-            }, 3500);
+            }, 2500);
         }else{
-            alert("Şifre ya da e-mail yanlış");
+            setIsLogin(true)
             removeTokens();
+            setisCorrectPassword(false);
+            setTimeout(() => {
+                setIsLogin(false);
+            }, 2000);
         }
     }
 
   return (
     <div className={`${styles["login-page"]}`}>
         <div className={`${styles["login-successfully-container"]} ${isLogin ? styles["show-successfully-container"]:""}`}>
-            <span className={`${styles["login-successfully-text"]}`}>Giriş Başarılı!</span>
+            <span className={`${isCorrectPassword ? styles["login-successfully-text"] : styles["incorret-password"] }`}>{isCorrectPassword ? "Giriş Başarılı!": "Şifre ya da E-posta yanlış!"}</span>
         </div>
         <div className={`${styles["login-container"]}`}>
 
