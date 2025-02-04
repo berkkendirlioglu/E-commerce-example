@@ -1,5 +1,5 @@
 import styles from "./about.module.scss";
-import { Certificates, Comments, RatingStars } from "../index.ts";
+import { Certificates, RatingStars } from "../index.ts";
 
 export const About = () => {
   return (
