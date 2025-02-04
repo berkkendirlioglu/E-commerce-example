@@ -9,6 +9,7 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import { SubmitCommentType } from "../../types/CommentsType.ts";
 import { Rating } from "react-simple-star-rating";
+import { getAccessToken } from "../../services/storage.ts";
 
 const Pagination = () => {
   const pagination = [];
@@ -25,6 +26,8 @@ const Pagination = () => {
   }
   return pagination;
 };
+
+const access_token = getAccessToken();
 
 export const Comments = ({ slug }: { slug: string }) => {
   const [productComments, setProductComments] = useState<CommentsType>();
@@ -75,39 +78,41 @@ export const Comments = ({ slug }: { slug: string }) => {
         </span>
       </div>
 
-      <div className={`${styles["comments-form"]}`}>
-        <div className={`${styles["comment-form-title"]}`}>
-          <h2 className={`${styles["comment-box-title"]}`}>
-            Üründen Memnun Musun?
-          </h2>
-          <span className={`${styles["comment-text"]}`}>Bizimle Paylaş</span>
-        </div>
-        <form
-          className={`${styles["comment-form"]}`}
-          onSubmit={handleSubmit(addNewComment)}
-        >
-          <div className={`${styles["stars-wrapper"]}`}>
-            <Rating onClick={handleRating} />
+      {access_token && (
+        <div className={`${styles["comments-form"]}`}>
+          <div className={`${styles["comment-form-title"]}`}>
+            <h2 className={`${styles["comment-box-title"]}`}>
+              Üründen Memnun Musun?
+            </h2>
+            <span className={`${styles["comment-text"]}`}>Bizimle Paylaş</span>
           </div>
+          <form
+            className={`${styles["comment-form"]}`}
+            onSubmit={handleSubmit(addNewComment)}
+          >
+            <div className={`${styles["stars-wrapper"]}`}>
+              <Rating onClick={handleRating} />
+            </div>
 
-          <input
-            placeholder="Başlık..."
-            className={`${styles["comment-title"]}`}
-            type="text"
-            {...register("title")}
-          />
-          <textarea
-            placeholder="Yorumunuz..."
-            className={`${styles["comment-box"]}`}
-            rows={10}
-            cols={50}
-            {...register("comment")}
-          />
-          <button className={`${styles["submit-comment-button"]}`}>
-            Yorum Yap
-          </button>
-        </form>
-      </div>
+            <input
+              placeholder="Başlık..."
+              className={`${styles["comment-title"]}`}
+              type="text"
+              {...register("title")}
+            />
+            <textarea
+              placeholder="Yorumunuz..."
+              className={`${styles["comment-box"]}`}
+              rows={10}
+              cols={50}
+              {...register("comment")}
+            />
+            <button className={`${styles["submit-comment-button"]}`}>
+              Yorum Yap
+            </button>
+          </form>
+        </div>
+      )}
 
       {productComments?.data.results.map((comment, index) => (
         <div key={index} className={`${styles["comment"]}`}>
