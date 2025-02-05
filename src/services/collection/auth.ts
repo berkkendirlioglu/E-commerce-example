@@ -2,6 +2,7 @@ import { BASE_URL, FetchWithAuth } from "../api-client";
 import { isTokenExpired } from "../jwt-utils";
 import {
   getRefreshToken,
+  removeTokens,
   setAccessToken,
   setTokens,
 } from "../storage";
@@ -65,10 +66,13 @@ export async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken || isTokenExpired(refreshToken)) {
+    removeTokens();
+    window.location.reload();
     throw new Response(
       JSON.stringify("Refresh token is invalid"),
       { status: 401,statusText:"Refresh token is invalid", headers: { "Content-Type": "application/json" } }
     );
+    
   }
 
   const response = await fetch(BASE_URL + "/auth/token/refresh", {

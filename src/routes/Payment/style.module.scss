@@ -564,6 +564,34 @@
     .payment-wrapper {
       .payment-proccess-wrapper {
         flex: 1 0 100%;
+        .step-by-proccess{
+          .step-content{
+            .current-step-content{
+              .optional-select-wrapper{
+                .modal-container{
+                  .modal-wrapper{
+                    width: 95%;
+                    height: auto;
+                    .modal-form-wrapper{
+                      .modal-form{
+                        input,label,select{
+                          flex: 100%!important;
+                          width: 100%;
+                        }
+                        #address-firstName-input{
+                          order: 4;
+                        }
+                        #address-city-input{
+                          order: 10;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
       .basket-products-wrapper {
         flex: 1 0 100%;
@@ -575,5 +603,46 @@
 @media (max-width: 768px) {
   .payment-container {
     padding: 4rem 0;
+    .payment-wrapper{
+      .payment-proccess-wrapper{
+        .step-by-proccess{
+          .step-content{
+            .current-step-content{
+              .optional-select-wrapper{
+                .optional-select-form{
+                  .expired-cvv-wrapper{
+                    .cvv-code-wrapper{
+                      input{
+                        width: 100px;
+                      }
+                    }
+                  }
+                }
+                .modal-container{
+                  .modal-wrapper{
+                    width: 99%;
+                    height: auto;
+                    .modal-form-wrapper{
+                      .modal-form{
+                        input,label{
+                          flex: 100%;
+                          width: 100%;
+                        }
+                        #address-firstName-input{
+                          order: 4;
+                        }
+                        #address-city-input{
+                          order: 10;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

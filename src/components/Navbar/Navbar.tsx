@@ -255,7 +255,7 @@ export const Navbar = () => {
               className={`${styles["account-wrapper"]}`}
             >
               <NavLink
-                to={`${isAutUser ? "/my-account" : "/"}`}
+                to={`${isAutUser ? "/my-account" : "/account/login"}`}
                 className={`${styles["account-button"]}`}
               >
                 <span className={`${styles["account-icon"]}`}>

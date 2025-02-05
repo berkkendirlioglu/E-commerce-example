@@ -45,9 +45,6 @@ export function Payment() {
   const [selectedRegion, setselectedRegion] = useState<string | null>();
   const [selectedSubRegion, setselectedSubRegion] = useState<string | null>();
 
-  console.log(addressId);
-  console.log(handleEditAddress);
-
   useEffect(() => {
     const response = axios
       .get(`${BASE_URL}/api/v1/world/countries?limit=252`)
@@ -541,6 +538,7 @@ export function Payment() {
                   </div>
                 </div>
               </div>
+              
             </div>
 
             <div className={`${styles["step-by-proccess"]}`}>
