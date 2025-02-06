@@ -82,7 +82,7 @@ export const Footer = () => {
           <div className={`${styles["copyright-container"]}`}>
             <span className={`${styles["copyright-text"]}`}>Copyright © - Tüm Hakları Saklıdır.</span>
             <div className={`${styles["sign-container"]}`}>
-              <img className={`${styles["copyright-sign"]}`} src={Sign} alt="Sign" />
+              <img className={`${styles["copyright-sign"]}`} src={Sign} alt="Sign" title="Creator İrem Kübra APAYDIN" />
             </div>
           </div>
         </div>
