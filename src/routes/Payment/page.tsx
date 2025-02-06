@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "./style.module.scss";
 import { NavLink } from "react-router-dom";
-import { navBarStore } from "../../store/NavbarStore.ts";
+import { navBarStore } from "../../store/navbar-store.ts";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { PaymentMethodPayload, shippingMethod } from "../index.ts";
 import {

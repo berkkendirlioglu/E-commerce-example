@@ -8,7 +8,7 @@ import {
   Comments,
   CommentsGraphs,
 } from "../index.ts";
-import { navBarStore } from "../../store/NavbarStore.ts";
+import { navBarStore } from "../../store/navbar-store.ts";
 import { useLoaderData, LoaderFunction, Params } from "react-router-dom";
 import { ReactNode, useEffect, useState } from "react";
 import { BasketProductsPayload } from "../../types/ProductDetailType.ts";

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import styles from "./navbar.module.scss";
 import axios from "axios";
 import { Logo_Siyah } from "../../routes/index.ts";
-import { navBarStore } from "../../store/NavbarStore.ts";
+import { navBarStore } from "../../store/navbar-store.ts";
 import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { getAccessToken, removeTokens } from "../../services/storage.ts";

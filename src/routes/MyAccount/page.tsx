@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import styles from "./style.module.scss";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { navBarStore } from "../../store/NavbarStore.ts";
+import { navBarStore } from "../../store/navbar-store.ts";
 import { NavLink } from "react-router-dom";
 import {
   CreateNewAddress,
