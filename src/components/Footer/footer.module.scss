@@ -54,8 +54,19 @@ $secondary-hover:rgba(153, 153, 153,.5);
         }
         .copyright-container{
             padding: 3rem 0 0 0;
+            display: flex;
+            flex-wrap: wrap;
             .copyright-text{
+                width: 41%;
                 color: $secondary;
+            }
+            .sign-container{
+                display: flex;
+                .copyright-sign{
+                    width: 250px;
+                    height: auto;
+                    pointer-events: none;
+                }
             }
         }
     }
@@ -73,6 +84,20 @@ $secondary-hover:rgba(153, 153, 153,.5);
     .footer-main{
         .footer-container{
             padding: 1rem 1rem;
+        }
+    }
+}
+
+@media (max-width:768px){
+    .footer-main{
+        .footer-container{
+            .copyright-container{
+                display: flex;
+                justify-content: space-between;
+                .copyright-text{
+                    width: auto;
+                }
+            }
         }
     }
 }
@@ -107,6 +132,19 @@ $secondary-hover:rgba(153, 153, 153,.5);
                             
                         }
                     }
+                }
+            }
+            .copyright-container{
+                display: flex;
+                gap: 1rem;
+                .copyright-text{
+                    width: 100%;
+                    text-align: center;
+                }
+                .sign-container{
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
                 }
             }
         }

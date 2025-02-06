@@ -3,6 +3,7 @@ import { Logo_Beyaz } from "../../routes/index.ts";
 import FooterMenu from "../../dummy-data/FooterLinks.ts";
 import { NavLink } from "react-router-dom";
 import { ReactNode, useEffect, useState } from "react";
+import Sign from '../../assets/images/sign.png';
 
 const MenuList = ({ title, content }: { title: string; content: ReactNode }) => {
   const [isOpen, setisOpen] = useState<boolean>(false);
@@ -80,6 +81,9 @@ export const Footer = () => {
           </div>
           <div className={`${styles["copyright-container"]}`}>
             <span className={`${styles["copyright-text"]}`}>Copyright © - Tüm Hakları Saklıdır.</span>
+            <div className={`${styles["sign-container"]}`}>
+              <img className={`${styles["copyright-sign"]}`} src={Sign} alt="Sign" />
+            </div>
           </div>
         </div>
       </footer>
