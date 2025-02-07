@@ -405,12 +405,16 @@
   .not-logged-container{
     position: fixed;
     top:0;
-    left: 50%;
-    width: auto;
+    left:50%;
+    width: 100%;
     height: auto;
     transform: translate(-50%,-100px);
     z-index: 99999;
+    opacity: 0;
     transition: all .2s linear;
+    display: flex;
+    justify-content: center;
+    
     .not-logged-text{
       padding: 1rem 2rem;
       background: #ff0000;
