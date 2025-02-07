@@ -3,7 +3,7 @@ import { LoginRegisterWrapper } from "../Login/page.tsx";
 import styles from "./register.module.scss";
 import { AccountButton } from "../index.ts";
 import { FormEvent, useState } from "react";
-import { RegisterPayload } from "../../types/AccountType.ts";
+import { RegisterPayload } from "../../types/account-types.ts";
 import { register } from "../../services/collection/auth.ts";
 
 const api_key = import.meta.env.VITE_API_KEY;

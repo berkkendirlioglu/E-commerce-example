@@ -11,7 +11,7 @@ import {
 import { navBarStore } from "../../store/navbar-store.ts";
 import { useLoaderData, LoaderFunction, Params } from "react-router-dom";
 import { ReactNode, useEffect, useState } from "react";
-import { BasketProductsPayload } from "../../types/ProductDetailType.ts";
+import { BasketProductsPayload } from "../../types/product-detail-types.ts";
 import { AddBasketToProduct, GetMyBasket } from "../../services/collection/auth.ts";
 import { getAccessToken } from "../../services/storage.ts";
 

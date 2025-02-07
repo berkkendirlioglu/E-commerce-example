@@ -1,4 +1,4 @@
-import { ProductsCardsType } from "../types/ProductsCardsType";
+import { ProductsCardsType } from "../types/products-cards-types";
 import ProteinImage from "../assets/images/protein.png";
 import VitaminlerImage from "../assets/images/vitaminler.png";
 import SaglıkImage from "../assets/images/saglık.png";

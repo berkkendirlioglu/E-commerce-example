@@ -3,7 +3,7 @@ import styles from './login.module.scss';
 import styled from 'styled-components';
 import {AccountButton} from '../index.ts'
 import { FormEvent, useState } from 'react';
-import { LoginPayload } from '../../types/AccountType.ts';
+import { LoginPayload } from '../../types/account-types.ts';
 import { login } from '../../services/collection/auth.ts';
 import { removeTokens } from '../../services/storage.ts';
 

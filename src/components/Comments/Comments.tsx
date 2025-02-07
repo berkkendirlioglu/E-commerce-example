@@ -7,7 +7,7 @@ import {
   ProductsComments,
 } from "../../services/collection/auth.ts";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { SubmitCommentType } from "../../types/CommentsType.ts";
+import { SubmitCommentType } from "../../types/comments-types.ts";
 import { Rating } from "react-simple-star-rating";
 import { getAccessToken } from "../../services/storage.ts";
 

@@ -12,18 +12,18 @@ import {
   GetMyOrderDetails,
   UpdateMyProfile,
 } from "../../services/collection/auth.ts";
-import { UpdateProfileType } from "../../types/AccountType.ts";
+import { UpdateProfileType } from "../../types/account-types.ts";
 import {
   RegionType,
   CountriesType,
   SubRegionType,
   AllAddressType,
-} from "../../types/AddressType.ts";
+} from "../../types/address-types.ts";
 import axios from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { AddressPayloadType } from "../../types/AddressType.ts";
-import { AllOrderTypes, OrderDetailsType } from "../../types/OrderTypes.ts";
+import { AddressPayloadType } from "../../types/address-types.ts";
+import { AllOrderTypes, OrderDetailsType } from "../../types/order-types.ts";
 import { getAccessToken } from "../../services/storage.ts";
 
 const BASE_URL: string = "https://fe1111.projects.academy.onlyjs.com";

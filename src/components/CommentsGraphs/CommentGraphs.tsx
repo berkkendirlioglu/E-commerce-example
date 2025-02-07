@@ -8,7 +8,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { CommentsStatistics } from "../../services/collection/auth";
-import { CommentsStatisticsType } from "../../types/CommentsType";
+import { CommentsStatisticsType } from "../../types/comments-types";
 
 Chart.register(
   CategoryScale,

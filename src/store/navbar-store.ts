@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { ProductInfo, CategoriesType } from "../routes/index.ts";
-import { UsersType } from "../types/AccountType.ts";
-import { BasketProductType } from "../types/ProductDetailType.ts";
+import { UsersType } from "../types/account-types.ts";
+import { BasketProductType } from "../types/product-detail-types.ts";
 
 interface NavbarStoreType {
     categories:CategoriesType | null;

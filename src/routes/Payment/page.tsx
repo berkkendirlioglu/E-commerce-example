@@ -10,13 +10,13 @@ import {
   CountriesType,
   RegionType,
   SubRegionType,
-} from "../../types/AddressType.ts";
+} from "../../types/address-types.ts";
 import {
   EditMyAddress,
   GetAllMyAddress,
   OrderToProducts,
 } from "../../services/collection/auth.ts";
-import { OrderToProductsPayload } from "../../types/PaymentTypes.ts";
+import { OrderToProductsPayload } from "../../types/payment-types.ts";
 import { getRefreshToken } from "../../services/storage.ts";
 import PhoneInput from "react-phone-input-2";
 import axios from "axios";

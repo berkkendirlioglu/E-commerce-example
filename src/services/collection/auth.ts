@@ -12,12 +12,12 @@ import {
   RegisterPayload,
   UsersType,
   UpdateProfileType
-} from "../../types/AccountType";
-import { AllAddressType, CreateAddressResultType, AddressPayloadType } from "../../types/AddressType";
-import { BasketProductsPayload, BasketProductType } from "../../types/ProductDetailType";
-import { OrderToProductsPayload } from "../../types/PaymentTypes";
-import { AllOrderTypes, OrderDetailsType } from "../../types/OrderTypes";
-import { CommentResponseType, SubmitCommentType } from "../../types/CommentsType";
+} from "../../types/account-types";
+import { AllAddressType, CreateAddressResultType, AddressPayloadType } from "../../types/address-types";
+import { BasketProductsPayload, BasketProductType } from "../../types/product-detail-types";
+import { OrderToProductsPayload } from "../../types/payment-types";
+import { AllOrderTypes, OrderDetailsType } from "../../types/order-types";
+import { CommentResponseType, SubmitCommentType } from "../../types/comments-types";
 
 export async function register(data: RegisterPayload) {
   const response = await fetch(BASE_URL + "/auth/register", {

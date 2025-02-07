@@ -44,7 +44,7 @@ export type {
   AuthResponse,
   UsersType,
   UpdateProfileType,
-} from "../types/AccountType.ts";
+} from "../types/account-types.ts";
 export type {
   CountriesType,
   RegionType,
@@ -52,33 +52,33 @@ export type {
   CreateAddressResultType,
   AllAddressType,
   AddressPayloadType,
-} from "../types/AddressType.ts";
+} from "../types/address-types.ts";
 export type {
   AllProductType,
   ProductInfo,
   LoaderData,
-} from "../types/allproductType.ts";
+} from "../types/all-product-types.ts";
 
-export type { CertificatesType } from "../types/certificatesType.ts";
-export type { CommentsType, DummyCommentsType } from "../types/CommentsType.ts";
-export type { FooterMenuType } from "../types/footerMenuType.ts";
+export type { CertificatesType } from "../types/certificates-types.ts";
+export type { CommentsType, DummyCommentsType } from "../types/comments-types.ts";
+export type { FooterMenuType } from "../types/footer-menu-types.ts";
 export type {
   MostSellerType,
   MostSellerData,
   LoaderMostSeller,
-} from "../types/MostSellerType.ts";
-export type { CategoriesType } from "../types/navbarTypes.ts";
-export type { AllOrderTypes, OrderDetailsType } from "../types/OrderTypes.ts";
+} from "../types/most-seller-types.ts";
+export type { CategoriesType } from "../types/navbar-types.ts";
+export type { AllOrderTypes, OrderDetailsType } from "../types/order-types.ts";
 export type {
   PaymentMethodPayload,
   OrderToProductsPayload,
-} from "../types/PaymentTypes.ts";
+} from "../types/payment-types.ts";
 export type {
   ProductDetailType,
   VariantsType,
   SizeType,
   BasketProductsPayload,
   BasketProductType,
-} from "../types/ProductDetailType.ts";
-export type { ProductsCardsType } from "../types/ProductsCardsType.ts";
-export type { sssStoreType } from "../types/sssStoreType.ts";
+} from "../types/product-detail-types.ts";
+export type { ProductsCardsType } from "../types/products-cards-types.ts";
+export type { sssStoreType } from "../types/sss-types.ts";
