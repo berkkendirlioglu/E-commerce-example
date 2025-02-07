@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import {AccountButton} from '../index.ts'
 import { FormEvent, useState } from 'react';
 import { LoginPayload } from '../../types/AccountType.ts';
-import { api_key } from '../Register/page.tsx';
 import { login } from '../../services/collection/auth.ts';
 import { removeTokens } from '../../services/storage.ts';
 
@@ -21,6 +20,8 @@ export const LoginRegisterWrapper = styled.div`
         width: 95%;
     }
 `;
+
+const api_key = import.meta.env.VITE_API_KEY;
 
 export const Login = () => {
     const [isLogin, setIsLogin] = useState<boolean>(false);

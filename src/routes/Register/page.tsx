@@ -6,7 +6,7 @@ import { FormEvent, useState } from "react";
 import { RegisterPayload } from "../../types/AccountType.ts";
 import { register } from "../../services/collection/auth.ts";
 
-export const api_key = 832133;
+const api_key = import.meta.env.VITE_API_KEY;
 
 export const Register = () => {
   const [registerSuccess, setregisterSuccess] = useState<boolean>(false);
